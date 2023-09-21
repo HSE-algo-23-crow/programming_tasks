@@ -1,13 +1,22 @@
 import time
+from functools import lru_cache
 
 
+@lru_cache
 def fibonacci_rec(n: int) -> int:
     """Возвращает N-е число Фибоначчи. Реализована рекурсивно.
 
     :param n: порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
+    if type(n) != int:
+        raise TypeError("int expected")
+    if n < 1:
+        raise Exception('expected n >=1')
+
+    if n < 3:
+        return 1
+    return fibonacci_rec(n - 1) + fibonacci_rec(n - 2)
 
 
 def fibonacci_iter(n: int) -> int:
@@ -16,7 +25,12 @@ def fibonacci_iter(n: int) -> int:
     :param n: порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
+    n-=2
+    elem1 = elem2 = 1
+    while n > 0:
+        elem1, elem2 = elem2, elem1 + elem2
+        n -= 1
+    return elem2
 
 
 def rabbits(month: int, lifetime: int) -> int:
@@ -29,7 +43,7 @@ def rabbits(month: int, lifetime: int) -> int:
     :param lifetime: продолжительность жизни кролика, не менее 2 месяцев
     :return: количество пар кроликов
     """
-    pass
+
 
 
 def main():
