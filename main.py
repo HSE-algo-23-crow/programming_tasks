@@ -43,7 +43,13 @@ def rabbits(month: int, lifetime: int) -> int:
     :param lifetime: продолжительность жизни кролика, не менее 2 месяцев
     :return: количество пар кроликов
     """
+    if type(month) != int or type(lifetime) != int:
+        raise TypeError()
 
+    if (month < 1 or lifetime < 2):
+        raise Exception()
+
+    return fibonacci_rec(month) - (fibonacci_rec(month - lifetime) if (lifetime < month) else 0)
 
 
 def main():
@@ -63,6 +69,7 @@ def main():
         print(f'\nВычисление числа пар кроликов по состоянию на {n} месяц')
         print(f'при продолжительности жизни кролика {lifetime} месяцев')
         print(rabbits(n, lifetime))
+
 
 
 if __name__ == '__main__':
