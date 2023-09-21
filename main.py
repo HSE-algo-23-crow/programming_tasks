@@ -18,7 +18,7 @@ def fibonacci_rec(n: int) -> int:
         return 1
     return fibonacci_rec(n - 1) + fibonacci_rec(n - 2)
 
-
+#
 def fibonacci_iter(n: int) -> int:
     """Возвращает N-е число Фибоначчи. Реализована итеративно.
 
