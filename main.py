@@ -52,7 +52,7 @@ def rabbits(month: int, lifetime: int) -> int:
     :return: количество пар кроликов
     """
     if month <= 0:
-        return 0
+        raise Exception("Кол-во месяцев должно быть больше или равно единицы")
     elif month == 1:
         return 1
     else:
