@@ -4,19 +4,37 @@ import time
 def fibonacci_rec(n: int) -> int:
     """Возвращает N-е число Фибоначчи. Реализована рекурсивно.
 
-    :param n: порядковый номер числа Фибоначчи
+    :param n: Порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
+
+    if type(n) != int or n < 1:
+        raise Exception('Параметр n меньше 1 или не является целом числом')
+
+    if n < 3:
+        return 1
+
+    first = 1
+    second = 1
+
+    for _ in range(2, n):
+        first, second = second, first + second
+    return second
 
 
 def fibonacci_iter(n: int) -> int:
     """Возвращает N-е число Фибоначчи. Реализована итеративно.
 
-    :param n: порядковый номер числа Фибоначчи
+    :param n: Порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
+    if type(n) != int or n < 1:
+        raise Exception('Параметр n < 1 или не является целом числом')
+
+    if n < 3:
+        return 1
+    else:
+        return fibonacci_iter(n - 1) + fibonacci_iter(n - 2)
 
 
 def rabbits(month: int, lifetime: int) -> int:
@@ -25,7 +43,7 @@ def rabbits(month: int, lifetime: int) -> int:
     месяца после рождения кролики производят новую пару кроликов каждый месяц.
     После достижения предельного возраста кролики умирают.
 
-    :param month: количество месяцев жизни популяции
+    :param month: Количество месяцев жизни популяции
     :param lifetime: продолжительность жизни кролика, не менее 2 месяцев
     :return: количество пар кроликов
     """
