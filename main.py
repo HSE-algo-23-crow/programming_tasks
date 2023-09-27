@@ -8,13 +8,11 @@ def fibonacci_rec(n: int) -> int:
     :return: число Фибоначчи
     """
     if type(n) != int:
-        raise Exception('Параметр n не является целом числом')
+        raise Exception('Параметр n не является целом числом!')
     if n < 1:
-        raise Exception('Параметр n меньше 1')
+        raise Exception('Параметр n меньше 1!')
 
-    if n == 1:
-        return 0
-    elif n in (2, 3):
+    if n in (1, 2):
         return 1
     return fibonacci_rec(n - 1) + fibonacci_rec(n - 2)
 
@@ -26,12 +24,12 @@ def fibonacci_iter(n: int) -> int:
     :return: число Фибоначчи
     """
     if type(n) != int:
-        raise Exception('Параметр n не является целым числом')
+        raise Exception('Параметр n не является целым числом!')
     if n < 1:
-        raise Exception('Параметр n меньше 1')
+        raise Exception('Параметр n меньше 1!')
 
     fib1 = fib2 = 1
-    n -= 3
+    n -= 2
 
     while n > 0:
         fib1, fib2 = fib2, fib1 + fib2
@@ -52,7 +50,7 @@ def rabbits(month: int, lifetime: int) -> int:
     :return: количество пар кроликов
     """
     if month <= 0:
-        raise Exception("Кол-во месяцев должно быть больше или равно единицы")
+        raise Exception("Кол-во месяцев должно быть больше или равно единицы!")
     elif month == 1:
         return 1
     else:
