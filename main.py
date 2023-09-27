@@ -7,7 +7,12 @@ def fibonacci_rec(n: int) -> int:
     :param n: порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci_rec(n - 1) + fibonacci_rec(n - 2)
 
 
 def fibonacci_iter(n: int) -> int:
@@ -16,7 +21,18 @@ def fibonacci_iter(n: int) -> int:
     :param n: порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
+
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+
+    prev, curr = 0, 1
+    "первый и текущий элемент последовательности до n"
+    for _ in range(2, n + 1):
+        prev, curr = curr, prev + curr
+
+    return curr
 
 
 def rabbits(month: int, lifetime: int) -> int:
@@ -29,7 +45,24 @@ def rabbits(month: int, lifetime: int) -> int:
     :param lifetime: продолжительность жизни кролика, не менее 2 месяцев
     :return: количество пар кроликов
     """
-    pass
+
+    if month <= 0 or lifetime < 2:  # проверка корректности входных параметров
+        return 0
+    pairs = 1  # начальное количество пар кроликов
+    age = 1  # начальный возраст кроликов
+
+    for _ in range(2, month + 1):
+      new_pairs = pairs  # новые родившиеся пары
+      if age >= 2:  # кролик достиг возраста размножения
+         new_pairs = pairs + new_pairs
+
+      age += 1  # увеличение возраста всех кроликов
+      if age > lifetime:  # удаление умерших кроликов
+         pairs -= 1
+
+      pairs = new_pairs  # обновление количества пар кроликов
+
+    return pairs
 
 
 def main():
