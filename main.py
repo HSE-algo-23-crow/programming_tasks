@@ -1,13 +1,13 @@
 import time
 
-
 def fibonacci_rec(n: int) -> int:
     """Возвращает N-е число Фибоначчи. Реализована рекурсивно.
 
     :param n: порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
+    if n == 1 or n == 2: return 1
+    else: return fibonacci_rec(n-1)+fibonacci_rec(n-2)
 
 
 def fibonacci_iter(n: int) -> int:
@@ -16,8 +16,15 @@ def fibonacci_iter(n: int) -> int:
     :param n: порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
-
+    fib1 = 1
+    fib2 = 1
+    fib3 = 0
+    for i in range(2,n):
+        fib3 = fib1 + fib2
+        fib1 = fib2
+        fib2 = fib3
+    if n == 1 or n == 2: return 1
+    else: return fib3
 
 def rabbits(month: int, lifetime: int) -> int:
     """Возвращает количество пар кроликов в популяции на заданный месяц.
@@ -30,7 +37,6 @@ def rabbits(month: int, lifetime: int) -> int:
     :return: количество пар кроликов
     """
     pass
-
 
 def main():
     n = 35
