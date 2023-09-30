@@ -10,7 +10,7 @@ def calculate_determinant(matrix: [[int]]) -> int:
 
 def calculate_determinant_recursion(matrix: [[int]]) -> int:
     """"Считает определитель, основная функция с рекурсией
-    param matrix: целочисленная квадратиная матрица
+    param matrix: целочисленная квадратная матрица
     :return: значение определителя
     """
 
@@ -31,8 +31,9 @@ def calculate_determinant_recursion(matrix: [[int]]) -> int:
 
 def calculate_minor(matrix: [[int]], matrix_column_index, optimal_row_index):
     """"Находит определитель минора через рекурсию
-    param matrix: целочисленная квадратиная матрица
-    param matrix_column_index
+    param matrix: целочисленная квадратная матрица
+    param matrix_column_index: индекс столбца матрицы
+    param optimal_row_index: индекс оптимальной строчки матрицы
     :return: значение определителя
     """
 
@@ -58,6 +59,11 @@ def calculate_minor(matrix: [[int]], matrix_column_index, optimal_row_index):
 
 
 def choose_optimal_row_index(matrix: [[int]]) -> int:
+    """
+    Определяет индекс самый оптимальной строки с наибольшим количеством нулей
+    :param matrix: целочисленная квадратная матрица
+    :return: индекс строки с наибольшим количеством нулей
+    """
     max_zero_number = 0
     optimal_row_index = 0
     row_index = 0
@@ -100,6 +106,10 @@ def validate_square_matrix(matrix: [[int]]):
 
 
 def main():
+    """
+    Основное тело программы, выодит матрицу и определитель матрицы
+    :return:
+    """
     matrix = [[1, 2],
               [3, 4]]
     print('Матрица')
