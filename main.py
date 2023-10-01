@@ -29,25 +29,40 @@ def create_random_matrix(order) -> {}:
     :return: возвращает словарь с матрицей и её определителем
     """
     matrix_and_det = {'matrix': [], 'det': 1}
+    random_column_index = random.randint(0, order-1)
 
     for row_index in range(0, order):
         matrix_row = []
 
         for column_index in range(0, order):
+
             if column_index < row_index:
                 matrix_row.append(0)
             else:
-                matrix_row.append(rnd.randint(-10, 10))
+                if column_index == row_index:
+                    matrix_row.append(1)
+                else:
+                    matrix_row.append(random.randint(-10, 10))
 
             if column_index == row_index:
                 matrix_and_det['det'] *= matrix_row[column_index]
 
         matrix_and_det['matrix'].append(matrix_row)
 
+    matrix_and_det['matrix'][random_column_index][random_column_index] = random.randint(-100, 100)
+    matrix_and_det['det'] = matrix_and_det['matrix'][random_column_index][random_column_index]
+
     for row_index in range(1, order):
-        k = random.randint(2, 5)
+        k = random.randint(2, 50)
         for column_index in range(0, order):
-            matrix_and_det['matrix'][row_index][column_index] += matrix_and_det['matrix'][row_index-1][column_index]*k
+            matrix_and_det['matrix'][row_index][column_index] += matrix_and_det['matrix'][0][column_index]*k
+
+    if order > 1:
+        random_index = random.randint(1, order-1)
+        matrix_and_det['matrix'][0], matrix_and_det['matrix'][random_index] = matrix_and_det['matrix'][random_index], matrix_and_det['matrix'][0]
+
+        for i in range(0, order):
+            matrix_and_det['matrix'][i][0], matrix_and_det['matrix'][i][random_index] = matrix_and_det['matrix'][i][random_index], matrix_and_det['matrix'][i][0]
     return matrix_and_det
 
 
