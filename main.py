@@ -1,13 +1,17 @@
 import time
 
-
 def fibonacci_rec(n: int) -> int:
     """Возвращает N-е число Фибоначчи. Реализована рекурсивно.
 
     :param n: порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci_rec(n - 1) + fibonacci_rec(n - 2)
 
 
 def fibonacci_iter(n: int) -> int:
@@ -16,7 +20,15 @@ def fibonacci_iter(n: int) -> int:
     :param n: порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    pass
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        a, b = 0, 1
+        for _ in range(n - 1):
+            a, b = b, a + b
+        return b
 
 
 def rabbits(month: int, lifetime: int) -> int:
@@ -29,8 +41,20 @@ def rabbits(month: int, lifetime: int) -> int:
     :param lifetime: продолжительность жизни кролика, не менее 2 месяцев
     :return: количество пар кроликов
     """
-    pass
-
+    if month <= 0:
+        return 0
+    elif month == 1:
+        return 1
+    else:
+        current_population = [1]  # Initial population with one pair of rabbits
+        for i in range(2, month + 1):
+            new_population = [0] * lifetime
+            for age in range(1, lifetime):
+                rabbits_at_age = current_population[age - 1] if age <= len(current_population) else 0
+                new_population[age] = rabbits_at_age
+            total_rabbits = sum(new_population)
+            current_population = [total_rabbits] + new_population[:-1]
+        return sum(current_population)
 
 def main():
     n = 35
