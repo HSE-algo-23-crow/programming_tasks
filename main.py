@@ -6,8 +6,7 @@ def fibonacci_rec(n: int) -> int:
     :param n: порядковый номер числа Фибоначчи
     :return: число Фибоначчи
     """
-    if n <= 0:
-        return 0
+    if n <= 0: return 0
     elif n == 1:
         return 1
     else:
