@@ -1,6 +1,3 @@
-import numpy
-
-
 def calculate_determinant(_matrix: [[int]]) -> int:
     """Вычисляет определитель целочисленной квадратной матрицы
 
@@ -22,17 +19,35 @@ def calculate_determinant(_matrix: [[int]]) -> int:
             continue
         det += _matrix[row_idx][column_idx] * (-1) ** (row_idx + column_idx) * calculate_minor(_matrix, row_idx,
                                                                                                column_idx)
-
     return det
 
 
-def calculate_minor(matrix, row_idx, column_idx):
-    minor = numpy.delete(numpy.delete(matrix, row_idx, axis=0), column_idx, axis=1)
-    return minor
+def calculate_minor(_matrix, _row_idx, _column_idx):
+    """Вычисляет минор целочисленной квадратной матрицы и создать матрицу на основе этого минора
+
+    :param _column_idx: Индекс столбца
+    :param _row_idx: Индекс строки
+    :param _matrix: Целочисленная квадратная матрица
+    :raise Exception: Если значение параметра не является целочисленной
+    квадратной матрицей
+    :return: Рекурсивный метод вычисления определителя
+    """
+    minor = []
+    for i in range(len(_matrix)):
+        if i != _row_idx:
+            minor_row = []
+            for j in range(len(_matrix)):
+                if j != _column_idx:
+                    minor_row.append(_matrix[i][j])
+            minor.append(minor_row)
+    return calculate_determinant(minor)
 
 
-def choose_optimal_row_idx():
-    pass
+def choose_optimal_row_idx(_matrix):
+    for i in range(0, 2):
+        if 0 in _matrix[i]:
+            return i
+    return 0
 
 
 def square_matrix_check(_matrix):
@@ -56,8 +71,9 @@ def square_matrix_check(_matrix):
 
 
 def main():
-    matrix = [[1, 2],
-              [3, 4]]
+    matrix = [[1, 2, 0],
+              [3, 4, 2],
+              [1, 4, 6]]
     print('Матрица')
     for row in matrix:
         print(row)
