@@ -14,12 +14,12 @@ def determinant(matrix: [[int]]) -> int:
 
 
 def calculate_determinant(matrix: [[int]]) -> int:
-    Check(matrix)
+    check(matrix)
 
     return determinant(matrix)
 
 
-def Check(matrix: [[int]]) -> None:
+def check(matrix: [[int]]) -> None:
     if type(matrix) != list:
         raise ValueError("Вводные данные должны быть списком")
     if False in [type(i) == list for i in matrix]:
