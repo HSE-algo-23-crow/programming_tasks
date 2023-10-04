@@ -17,8 +17,26 @@ def get_random_matrix_and_det(order):
     меньше 1
     :return: словарь с ключами matrix, det
     """
-    pass
+    if not isinstance(order, int) or order < 1:
+        raise ValueError("Порядок должен быть натуральным числом")
 
+    if order == 1:
+        det = random.randint(1, 100)
+        return {MATRIX: np.array([[det, ], ]), DET: det}
+
+    n = np.zeros((order,order))
+    for i in range(order):
+        n[i,i] = 1
+    for i in range(order * 10):
+        firstindex = random.randint(0, order-1)
+        secondindex = random.randint(0, order-1)
+        while firstindex == secondindex:
+            secondindex = random.randint(0, order-1)
+        n[firstindex] += n[secondindex]
+    det = random.randint(1, 100)
+    n[0] *= det
+
+    return {MATRIX:n, DET:det}
 
 def main():
     n = 10
