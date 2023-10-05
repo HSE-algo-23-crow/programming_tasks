@@ -1,4 +1,33 @@
 import time
+from functools import lru_cache
+
+
+def validate_gcd(a, b):
+    if type(a) != int:
+        raise Exception('Значение параметра a не является целым числом')
+    if type(b) != int:
+        raise Exception('Значение параметра b не является целым числом')
+    if a == 0 and b == 0:
+        raise Exception('Значения параметров a и b равны нулю')
+
+
+@lru_cache
+def gcd_recursive_counter(a, b):
+    if a == 0 or b == 0:
+        return a + b
+    else:
+        if a > b:
+            a = a % b
+        else:
+            b = b % a
+        return gcd_recursive_counter(a, b)
+
+
+def validate_lcm(a, b):
+    if type(a) != int or a < 1:
+        raise Exception('Значение параметра a не является натуральным положительным числом')
+    if type(b) != int or b < 1:
+        raise Exception('Значение параметра b не является натуральным положительным числом')
 
 
 def gcd_recursive(a: int, b: int) -> int:
@@ -11,7 +40,8 @@ def gcd_recursive(a: int, b: int) -> int:
     они оба равны нулю
     :return: значение наибольшего общего делителя
     """
-    pass
+    validate_gcd(a, b)
+    return gcd_recursive_counter(abs(a), abs(b))
 
 
 def gcd_iterative_slow(a: int, b: int) -> int:
@@ -24,7 +54,20 @@ def gcd_iterative_slow(a: int, b: int) -> int:
     они оба равны нулю
     :return: значение наибольшего общего делителя
     """
-    pass
+    validate_gcd(a, b)
+
+    a = abs(a)
+    b = abs(b)
+
+    if b > a:
+        a, b = b, a
+
+    while a != b and a != 0 and b != 0:
+        if a > b:
+            a -= b
+        else:
+            b -= a
+    return max(a, b)
 
 
 def gcd_iterative_fast(a: int, b: int) -> int:
@@ -37,7 +80,16 @@ def gcd_iterative_fast(a: int, b: int) -> int:
     они оба равны нулю
     :return: значение наибольшего общего делителя
     """
-    pass
+    validate_gcd(a, b)
+    a = abs(a)
+    b = abs(b)
+
+    while a and b:
+        if a > b:
+            a = a % b
+        else:
+            b = b % a
+    return a + b
 
 
 def lcm(a: int, b: int) -> int:
@@ -49,7 +101,8 @@ def lcm(a: int, b: int) -> int:
     они равны нулю
     :return: значение наименьшего общего кратного
     """
-    pass
+    validate_lcm(a, b)
+    return (a * b) // gcd_iterative_fast(a, b)
 
 
 def main():
