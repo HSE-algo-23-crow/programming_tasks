@@ -33,6 +33,10 @@ def gcd_iterative_slow(a: int, b: int) -> int:
     """
     validate_value_gcd(a, b)
     a, b = abs(a), abs(b)
+
+    if a*b == 0:
+        return a+b
+
     while a != b:
         if a > b:
             a = a - b
@@ -54,6 +58,7 @@ def gcd_iterative_fast(a: int, b: int) -> int:
     """
     validate_value_gcd(a, b)
     a, b = abs(a), abs(b)
+
     temp: int
     while b != 0:
         temp = b
@@ -93,8 +98,8 @@ def validate_value_lcm(a, b):
 
 
 def main():
-    a = 30
-    b = 24
+    a = 1
+    b = 0
     print(f'Вычисление НОД чисел {a} и {b} рекурсивно:')
     start_time = time.time()
     print(gcd_recursive(a, b))
