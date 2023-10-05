@@ -11,7 +11,14 @@ def gcd_recursive(a: int, b: int) -> int:
     они оба равны нулю
     :return: значение наибольшего общего делителя
     """
-    pass
+    validate_value_gcd(a, b)
+
+    a = abs(a)
+    b = abs(b)
+
+    if a*b == 0:
+        return a+b
+    return gcd_recursive(max(a, b)-min(a, b), min(a, b))
 
 
 def gcd_iterative_slow(a: int, b: int) -> int:
@@ -24,7 +31,15 @@ def gcd_iterative_slow(a: int, b: int) -> int:
     они оба равны нулю
     :return: значение наибольшего общего делителя
     """
-    pass
+    validate_value_gcd(a, b)
+    a, b = abs(a), abs(b)
+    while a != b:
+        if a > b:
+            a = a - b
+        else:
+            b = b - a
+
+    return a
 
 
 def gcd_iterative_fast(a: int, b: int) -> int:
@@ -37,7 +52,14 @@ def gcd_iterative_fast(a: int, b: int) -> int:
     они оба равны нулю
     :return: значение наибольшего общего делителя
     """
-    pass
+    validate_value_gcd(a, b)
+    a, b = abs(a), abs(b)
+    temp: int
+    while b != 0:
+        temp = b
+        b = a % b
+        a = temp
+    return a
 
 
 def lcm(a: int, b: int) -> int:
@@ -49,12 +71,30 @@ def lcm(a: int, b: int) -> int:
     они равны нулю
     :return: значение наименьшего общего кратного
     """
-    pass
+    validate_value_lcm(a, b)
+    a, b = abs(a), abs(b)
+    return a*b // gcd_iterative_fast(a, b)
+
+
+def validate_value_gcd(a, b):
+    if type(a) != int:
+        raise TypeError('Значение параметра a не является целым числом')
+    if type(b) != int:
+        raise TypeError('Значение параметра b не является целым числом')
+    if a == 0 and b == 0:
+        raise ValueError('Значения параметров a и b равны нулю')
+
+
+def validate_value_lcm(a, b):
+    if type(a) != int or a < 1:
+        raise ValueError('Значение параметра a не является натуральным положительным числом')
+    if type(b) != int or b < 1:
+        raise ValueError('Значение параметра b не является натуральным положительным числом')
 
 
 def main():
-    a = 1005002
-    b = 1354
+    a = 30
+    b = 24
     print(f'Вычисление НОД чисел {a} и {b} рекурсивно:')
     start_time = time.time()
     print(gcd_recursive(a, b))
