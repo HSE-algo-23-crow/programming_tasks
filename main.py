@@ -1,56 +1,55 @@
 import time
-
-
 def gcd_recursive(a: int, b: int) -> int:
-    """Вычисляет наибольший общий делитель двух целых чисел.
-    Рекурсивная реализация
-
-    :param a: целое число a
-    :param b: целое число b
-    :raise Exception: если a или b не являются целыми числами или
-    они оба равны нулю
-    :return: значение наибольшего общего делителя
-    """
-    pass
-
+    if a is None:
+        raise Exception("Значение параметра a не является целым числом")
+    if b is None:
+        raise Exception("Значение параметра b не является целым числом")
+    if not isinstance(a, int):
+        raise Exception("Значение параметра a не является целым числом")
+    if not isinstance(b, int):
+        raise Exception("Значение параметра b не является целым числом")
+    a, b = abs(a), abs(b)  # Преобразовываем числа в положительные значения
+    if a == 0 and b == 0:
+        raise Exception("Значения параметров a и b равны нулю")
+    if b == 0:
+        return a
+    return gcd_recursive(b, a % b)
 
 def gcd_iterative_slow(a: int, b: int) -> int:
-    """Вычисляет наибольший общий делитель двух целых чисел.
-    Медленная итеративная реализация
-
-    :param a: целое число a
-    :param b: целое число b
-    :raise Exception: если a или b не являются целыми числами или
-    они оба равны нулю
-    :return: значение наибольшего общего делителя
-    """
-    pass
-
+    if a is None:
+        raise Exception("Значение параметра a не является целым числом")
+    if b is None:
+        raise Exception("Значение параметра b не является целым числом")
+    if not isinstance(a, int):
+        raise Exception("Значение параметра a не является целым числом")
+    if not isinstance(b, int):
+        raise Exception("Значение параметра b не является целым числом")
+    a, b = abs(a), abs(b)  # Преобразовываем числа в положительные значения
+    if a == 0 and b == 0:
+        raise Exception("Значения параметров a и b равны нулю")
+    while b != 0:
+        a, b = b, a % b
+    return a
 
 def gcd_iterative_fast(a: int, b: int) -> int:
-    """Вычисляет наибольший общий делитель двух целых чисел.
-    Быстрая итеративная реализация
-
-    :param a: целое число a
-    :param b: целое число b
-    :raise Exception: если a или b не являются целыми числами или
-    они оба равны нулю
-    :return: значение наибольшего общего делителя
-    """
-    pass
-
-
+    if a is None:
+        raise Exception("Значение параметра a не является целым числом")
+    if b is None:
+        raise Exception("Значение параметра b не является целым числом")
+    if not isinstance(a, int):
+        raise Exception("Значение параметра a не является целым числом")
+    if not isinstance(b, int):
+        raise Exception("Значение параметра b не является целым числом")
+    a, b = abs(a), abs(b)  # Преобразовываем числа в положительные значения
+    if a == 0 and b == 0:
+        raise Exception("Значения параметров a и b равны нулю")
+    while b != 0:
+        a, b = b, a % b
+    return a
 def lcm(a: int, b: int) -> int:
-    """Вычисляет наименьшее общее кратное двух натуральных чисел
-
-    :param a: натуральное число a
-    :param b: натуральное число b
-    :raise Exception: если a или b не являются натуральными числами или
-    они равны нулю
-    :return: значение наименьшего общего кратного
-    """
-    pass
-
+    if a == 0 or b == 0:
+        raise Exception("Both numbers must be greater than zero.")
+    return a * b // gcd_iterative_fast(a, b)
 
 def main():
     a = 1005002
