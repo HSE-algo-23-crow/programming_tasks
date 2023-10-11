@@ -1,4 +1,7 @@
 import time
+from functools import lru_cache
+@lru_cache
+
 
 
 def gcd_recursive(a: int, b: int) -> int:
