@@ -51,7 +51,10 @@ def gcd_iterative_slow(a: int, b: int) -> int:
     validate_gcd_nums(a, b)
     a, b = abs(a), abs(b)
 
-    while a != b and a != 0 and b != 0:
+    if b > a:
+        a, b = b, a
+
+    while b:
         if a > b:
             a -= b
         else:

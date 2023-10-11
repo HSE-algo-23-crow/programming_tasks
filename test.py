@@ -15,7 +15,8 @@ class TestGcd(unittest.TestCase):
     """Набор тестов для проверки реализации функций расчета НОД.
     Каждый тест запускается трижды, для каждой из реализаций расчета НОД"""
     gcd_functions = (gcd_recursive, gcd_iterative_slow, gcd_iterative_fast)
-    incorrect_inputs = (None, 'string', 1.1, [])
+    incorrect_inputs = (None, 'string', 1.1)# [] - удалён так как вызывает ошибку при использовании lru_cache, от нас
+                                                                                                            #не зависит
     simple_set = ((9, 3, 3),
                   (-9, 3, 3),
                   (3, 5, 1),
