@@ -1,9 +1,24 @@
 import time
 from functools import lru_cache
 
+def validate_gcd_nums(a, b):
+    if not isinstance(a, int):
+        raise Exception("Значение параметра a не является целым числом")
 
+    if not isinstance(b, int):
+        raise Exception("Значение параметра b не является целым числом")
 
+    if a == 0 and b == 0:
+        raise Exception("Значения параметров a и b равны нулю")
 
+def validate_lcm_nums(a, b):
+    if not isinstance(a, int) or a < 1:
+        raise Exception('Значение параметра a не является натуральным положительным числом')
+
+    if not isinstance(b, int) or b < 1:
+        raise Exception('Значение параметра b не является натуральным положительным числом')
+
+@lru_cache
 def gcd_recursive(a: int, b: int) -> int:
     """Вычисляет наибольший общий делитель двух целых чисел.
     Рекурсивная реализация
@@ -14,7 +29,13 @@ def gcd_recursive(a: int, b: int) -> int:
     они оба равны нулю
     :return: значение наибольшего общего делителя
     """
-    pass
+    validate_gcd_nums(a, b)
+    a, b = abs(a), abs(b)
+
+    if b == 0:
+        return a
+    else:
+        return gcd_recursive(b, a % b)
 
 
 def gcd_iterative_slow(a: int, b: int) -> int:
@@ -27,7 +48,15 @@ def gcd_iterative_slow(a: int, b: int) -> int:
     они оба равны нулю
     :return: значение наибольшего общего делителя
     """
-    pass
+    validate_gcd_nums(a, b)
+    a, b = abs(a), abs(b)
+
+    while a != b and a != 0 and b != 0:
+        if a > b:
+            a -= b
+        else:
+            b -= a
+    return a
 
 
 def gcd_iterative_fast(a: int, b: int) -> int:
@@ -40,7 +69,12 @@ def gcd_iterative_fast(a: int, b: int) -> int:
     они оба равны нулю
     :return: значение наибольшего общего делителя
     """
-    pass
+    validate_gcd_nums(a, b)
+    a, b = abs(a), abs(b)
+
+    while b:
+        a, b = b, a % b
+    return a
 
 
 def lcm(a: int, b: int) -> int:
@@ -52,7 +86,10 @@ def lcm(a: int, b: int) -> int:
     они равны нулю
     :return: значение наименьшего общего кратного
     """
-    pass
+    validate_lcm_nums(a, b)
+    a, b = abs(a), abs(b)
+
+    return a * b // gcd_iterative_fast(a, b)
 
 
 def main():
