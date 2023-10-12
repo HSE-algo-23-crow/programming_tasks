@@ -47,8 +47,14 @@ def gcd_iterative_fast(a: int, b: int) -> int:
         a, b = b, a % b
     return a
 def lcm(a: int, b: int) -> int:
-    if a == 0 or b == 0:
-        raise Exception("Both numbers must be greater than zero.")
+    if not isinstance(a, int):
+        raise Exception("Значение параметра a не является натуральным положительным числом")
+    if not isinstance(b, int):
+        raise Exception("Значение параметра b не является натуральным положительным числом")
+    if a is None:
+        raise Exception("Значение параметра a не является натуральным положительным числом")
+    if b is None:
+        raise Exception("Значение параметра b не является натуральным положительным числом")
     return a * b // gcd_iterative_fast(a, b)
 
 def main():
