@@ -1,4 +1,6 @@
 import time
+
+
 def gcd_recursive(a: int, b: int) -> int:
     if a is None:
         raise Exception("Значение параметра a не является целым числом")
@@ -14,6 +16,7 @@ def gcd_recursive(a: int, b: int) -> int:
     if b == 0:
         return a
     return gcd_recursive(b, a % b)
+
 
 def gcd_iterative_slow(a: int, b: int) -> int:
     if a is None:
@@ -31,6 +34,7 @@ def gcd_iterative_slow(a: int, b: int) -> int:
         a, b = b, a % b
     return a
 
+
 def gcd_iterative_fast(a: int, b: int) -> int:
     if a is None:
         raise Exception("Значение параметра a не является целым числом")
@@ -46,16 +50,20 @@ def gcd_iterative_fast(a: int, b: int) -> int:
     while b != 0:
         a, b = b, a % b
     return a
+
+
 def lcm(a: int, b: int) -> int:
     if not isinstance(a, int):
         raise Exception("Значение параметра a не является натуральным положительным числом")
     if not isinstance(b, int):
         raise Exception("Значение параметра b не является натуральным положительным числом")
-    if a is None:
+    if a < 1:
         raise Exception("Значение параметра a не является натуральным положительным числом")
-    if b is None:
+    if b < 1:
         raise Exception("Значение параметра b не является натуральным положительным числом")
+    a, b = abs(a), abs(b)  # Преобразовываем числа в положительные значения
     return a * b // gcd_iterative_fast(a, b)
+
 
 def main():
     a = 1005002
