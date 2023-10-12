@@ -1,100 +1,63 @@
 import unittest
 
-from main import gcd_recursive, gcd_iterative_slow, gcd_iterative_fast, lcm
+from main import generate_permutations
 
 
-A = 0
-"""Индекс числа a в тестовых наборах данных"""
-B = 1
-"""Индекс числа b в тестовых наборах данных"""
-RESULT = 2
-"""Индекс результата в тестовых наборах данных"""
+class TestPermutation(unittest.TestCase):
+    """Класс для проверки генерации перестановок множества"""
+    err_msg = 'Параметр items не является неизменяемым множеством'
+    incorrect_inputs = (None, 'string', 1.1, [1, 2, 3], {1, 2, 3}, (1, 2, 3))
 
-
-class TestGcd(unittest.TestCase):
-    """Набор тестов для проверки реализации функций расчета НОД.
-    Каждый тест запускается трижды, для каждой из реализаций расчета НОД"""
-    gcd_functions = (gcd_recursive, gcd_iterative_slow, gcd_iterative_fast)
-    incorrect_inputs = (None, 'string', 1.1, [])
-    simple_set = ((9, 3, 3),
-                  (-9, 3, 3),
-                  (3, 5, 1),
-                  (-18, -45, 9),
-                  (1, 0, 1),
-                  (0, 1, 1))
-    long_set = ((1005002, 1354, 2),
-                (-1005002, 1354, 2),
-                (65225655, 1610510, 805255),
-                (-1944, -332024, 8),
-                (65225655, 0, 65225655),
-                (0, 65225655, 65225655))
-
-    def test_incorrect_first(self):
-        """Проверка выброса исключения при передаче некорректного значения
-        в параметр a"""
-        err_message = 'Значение параметра a не является целым числом'
-        for gcd in self.gcd_functions:
-            for val in self.incorrect_inputs:
-                self.assertRaisesRegex(Exception, err_message, gcd, val, 1)
-
-    def test_incorrect_second(self):
-        """Проверка выброса исключения при передаче некорректного значения
-        в параметр b"""
-        err_message = 'Значение параметра b не является целым числом'
-        for gcd in self.gcd_functions:
-            for val in self.incorrect_inputs:
-                self.assertRaisesRegex(Exception, err_message, gcd, 1, val)
-
-    def test_both_zero(self):
-        """Проверка выброса исключения при передаче 0 в параметры a и b"""
-        err_message = 'Значения параметров a и b равны нулю'
-        for gcd in self.gcd_functions:
-            self.assertRaisesRegex(Exception, err_message, gcd, 0, 0)
-
-    def test_simple(self):
-        """Проверка вычисления НОД на примерах небольших чисел"""
-        for gcd in self.gcd_functions:
-            for row in self.simple_set:
-                self.assertEqual(row[RESULT], gcd(row[A], row[B]))
-
-    def test_long(self):
-        """Проверка вычисления НОД на примерах относительно больших чисел"""
-        for gcd in self.gcd_functions:
-            for row in self.long_set:
-                self.assertEqual(row[RESULT], gcd(row[A], row[B]))
-
-
-class TestLcm(unittest.TestCase):
-    """Набор тестов для проверки реализации функции расчета НОК"""
-    incorrect_inputs = (None, 'string', 1.1, [], 0, -1)
-
-    def test_incorrect_first(self):
-        """Проверка выброса исключения при передаче некорректного значения
-        в параметр a"""
-        err_message = ('Значение параметра a не является натуральным '
-                       'положительным числом')
+    def test_incorrect_inputs(self):
+        """Проверка выброса TypeError исключения при передаче
+        в параметр некорректного значения"""
         for val in self.incorrect_inputs:
-            self.assertRaisesRegex(Exception, err_message, lcm, val, 1)
+            self.assertRaisesRegex(TypeError, self.err_msg,
+                                   generate_permutations, val)
 
-    def test_incorrect_second(self):
-        """Проверка выброса исключения при передаче некорректного значения
-        в параметр b"""
-        err_message = ('Значение параметра b не является натуральным '
-                       'положительным числом')
-        for val in self.incorrect_inputs:
-            self.assertRaisesRegex(Exception, err_message, lcm, 1, val)
+    def test_empty(self):
+        """Проверка генерации перестановок для пустого множества"""
+        self.assertCountEqual([], generate_permutations(frozenset()))
 
-    def test_primes(self):
-        """Проверка вычисления НОК для простых чисел"""
-        self.assertEqual(21, lcm(7, 3))
+    def test_single_num(self):
+        """Проверка генерации перестановок для множества из одного числа"""
+        self.assertCountEqual([[1]], generate_permutations(frozenset((1,))))
 
-    def test_simple(self):
-        """Проверка вычисления НОК для небольших чисел"""
-        self.assertEqual(24, lcm(6, 8))
+    def test_double_num(self):
+        """Проверка генерации перестановок для множества из двух чисел"""
+        self.assertCountEqual([[1, 2], [2, 1]],
+                              generate_permutations(frozenset((1, 2))))
 
-    def test_simple_long(self):
-        """Проверка вычисления НОК для относительно больших чисел"""
-        self.assertEqual(680386354, lcm(1005002, 1354))
+    def test_double_bool(self):
+        """Проверка генерации перестановок для множества из двух логических
+        значений"""
+        self.assertCountEqual([[True, False], [False, True]],
+                              generate_permutations(frozenset((True, False))))
+
+    def test_triple_num(self):
+        """Проверка генерации перестановок для множества из трех чисел"""
+        self.assertCountEqual([[1, 2, 3], [1, 3, 2], [2, 1, 3],
+                               [2, 3, 1], [3, 1, 2], [3, 2, 1]],
+                              generate_permutations(frozenset((1, 2, 3))))
+
+    def test_triple_char(self):
+        """Проверка генерации перестановок для множества из трех символов"""
+        self.assertCountEqual([['a', 'b', 'c'], ['a', 'c', 'b'],
+                               ['b', 'a', 'c'], ['b', 'c', 'a'],
+                               ['c', 'a', 'b'], ['c', 'b', 'a']],
+                              generate_permutations(frozenset(('a', 'b', 'c'))))
+
+    def test_quadruple_num(self):
+        """Проверка генерации перестановок для множества из четырех чисел"""
+        self.assertCountEqual([[1, 2, 3, 4], [1, 2, 4, 3], [1, 3, 2, 4],
+                               [1, 3, 4, 2], [1, 4, 2, 3], [1, 4, 3, 2],
+                               [2, 1, 3, 4], [2, 1, 4, 3], [2, 3, 1, 4],
+                               [2, 3, 4, 1], [2, 4, 1, 3], [2, 4, 3, 1],
+                               [3, 1, 2, 4], [3, 1, 4, 2], [3, 2, 1, 4],
+                               [3, 2, 4, 1], [3, 4, 1, 2], [3, 4, 2, 1],
+                               [4, 1, 2, 3], [4, 1, 3, 2], [4, 2, 1, 3],
+                               [4, 2, 3, 1], [4, 3, 1, 2], [4, 3, 2, 1]],
+                              generate_permutations(frozenset((1, 2, 3, 4))))
 
 
 if __name__ == '__main__':
