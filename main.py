@@ -8,7 +8,34 @@ def generate_permutations(items: frozenset[Any]) -> list[Any]:
     :return: список перестановок, где каждая перестановка список элементов
     множества
     """
-    pass
+    validate_set_raises_ex(items)
+
+    if len(items) == 0:
+        return []
+
+    result = []
+    indexes = [0 for i in range(len(items))]
+    items = list(items)
+    result.append(items[:])
+    i = 1
+    while i < len(items):
+        if indexes[i] < i:
+            if i % 2 == 0:
+                items[0], items[i] = items[i], items[0]
+            else:
+                items[indexes[i]], items[i] = items[i], items[indexes[i]]
+            result.append(items[:])
+            indexes[i] += 1
+            i = 1
+        else:
+            indexes[i] = 0
+            i += 1
+    return result
+
+
+def validate_set_raises_ex(items: frozenset[Any]):
+    if type(items) != frozenset:
+        raise TypeError('Параметр items не является неизменяемым множеством')
 
 
 def main():
