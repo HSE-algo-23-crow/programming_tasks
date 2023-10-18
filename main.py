@@ -13,24 +13,23 @@ def generate_permutations(items: frozenset[Any]) -> list[Any]:
 
     if len(items) == 0:
         return []
-    if len(items) == 1:
-        return [[x for x in items]]
-    return generate_premutations_rec(items)
+    return generate_premutations_rec(set([item for item in items]))
 
 def generate_premutations_rec(items):
-    if len(items) <= 1:
-        return [items]
+    if len(items) == 1:
+        return [[items.pop()]]
 
-    result = []
-    elems = list(items)
-    for i in range(len(elems)):
-        remaining_elements = elems[:i] + elems[i + 1 :]
-        permutations = generate_premutations_rec(frozenset(remaining_elements))
+    current_elem = items.pop()
+    premutations = generate_premutations_rec(items)
+    output = []
 
-        for permutation in permutations:
-            result.append([elems[i]] + list(permutation))
+    for premutation in premutations:
+        for i in range(len(premutation) + 1):
+            new_premutation = premutation[:i] + [current_elem] + premutation[i:]
+            output.append(new_premutation)
 
-    return result
+    return output
+
 
 def main():
     items = frozenset([1, 2, 3])
