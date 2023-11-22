@@ -1,19 +1,106 @@
-from typing import Any
+STR_LENGTH_ERROR_MSG = 'Длина строки должна быть целым положительным числом'
+"""Сообщение об ошибке при некорректном значении параметра Длина строки"""
+
+NOT_INT_VALUE_TEMPL = 'Параметр {0} Не является целым числом'
+"""Шаблон сообщения об ошибке при нечисловом значении параметра"""
+
+NEGATIVE_VALUE_TEMPL = 'Параметр {0} отрицательный'
+"""Шаблон сообщения об ошибке при отрицательном значении параметра"""
+
+N_LESS_THAN_K_ERROR_MSG = 'Параметр n меньше чем k'
+"""Сообщение об ошибке при значении параметра n меньше чем k"""
 
 
-def generate_permutations(items: frozenset[Any]) -> list[Any]:
-    """Генерирует все варианты перестановок элементов указанного множества
-    :param items: неизменяемое множество элементов
-    :raise TypeError: если параметр items не является неизменяемым множеством
-    :return: список перестановок, где каждая перестановка список элементов
-    множества
+def generate_strings(length: int) -> list[str]:
+    """Возвращает строки заданной длины, состоящие из 0 и 1, где никакие
+    два нуля не стоят рядом.
+    :param length: Длина строки.
+    :raise ValueError: Если длина строки не является целым положительным
+    числом.
+    :return: Список строк.
     """
-    pass
+    if type(length) != int or length < 1:
+        raise ValueError(STR_LENGTH_ERROR_MSG)
+    chars = ''
+    strings = []
+    if length == 0:
+        return strings
+    __add_zero(chars, length, strings)
+    __add_one(chars, length, strings)
+    return strings
+
+
+def __add_zero(chars, length, strings):
+    chars += '0'
+    if len(chars) == length:
+        strings.append(chars)
+    else:
+        __add_one(chars, length, strings)
+
+
+def __add_one(chars, length, strings):
+    if len(chars) == length - 1:
+        strings.append(chars + '1')
+    else:
+        __add_one(chars + '1', length, strings)
+        __add_zero(chars + '1', length, strings)
+
+
+def binomial_coefficient(n: int, k: int, use_rec=False) -> int:
+    """Вычисляет биномиальный коэффициент из n по k.
+    :param n: Количество элементов в множестве, из которого производится выбор.
+    :param k: Количество элементов, которые нужно выбрать.
+    :param use_rec: Использовать итеративную или рекурсивную реализацию функции.
+    :raise ValueError: Если параметры не являются целыми неотрицательными
+    числами или значение параметра n меньше чем k.
+    :return: Значение биномиального коэффициента.
+    """
+    check_error = __check_params(n, k)
+    if check_error:
+        raise ValueError(check_error)
+    if use_rec:
+        return __bin_coef_rec_add(n, k)
+    return __bin_coef_iter_add(n, k)
+
+
+def __check_params(n: int, k: int) -> dict[str: bool, str: str]:
+    for param, param_name in zip([n, k], ['n', 'k']):
+        if type(param) != int:
+            return NOT_INT_VALUE_TEMPL.format(param_name)
+        if param < 0:
+            return NEGATIVE_VALUE_TEMPL.format(param_name)
+    if n < k:
+        return N_LESS_THAN_K_ERROR_MSG
+
+
+def __bin_coef_iter_add(n: int, k: int) -> int:
+    if n == k or k == 0:
+        return 1
+    pascal_triangle = [[1]] + [[1] + ([0] * i) + [1] for i in range(n)]
+    for i in range(2, n + 1):
+        for j in range(1, n):
+            if j < i:
+                pascal_triangle[i][j] = pascal_triangle[i - 1][j] + \
+                                        pascal_triangle[i - 1][j - 1]
+    return pascal_triangle[n][k]
+
+
+def __bin_coef_rec_add(n: int, k: int) -> int:
+    if n == k or k == 0:
+        return 1
+    return __bin_coef_rec_add(n - 1, k) + __bin_coef_rec_add(n - 1, k - 1)
 
 
 def main():
-    items = frozenset([1, 2, 3])
-    print(generate_permutations(items))
+    n = 10
+    print(f'Строки длиной {n}:\n{generate_strings(n)}')
+
+    n = 30
+    k = 20
+    print(f'Биномиальный коэффициент (итеративно) при n, k ({n}, {k}) = ',
+          binomial_coefficient(n, k))
+    print(f'Биномиальный коэффициент (рекурсивно) при n, k ({n}, {k}) = ',
+          binomial_coefficient(n, k, use_rec=True))
 
 
 if __name__ == '__main__':

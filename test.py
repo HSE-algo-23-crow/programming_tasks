@@ -1,63 +1,89 @@
 import unittest
 
-from main import generate_permutations
+from main import generate_strings, binomial_coefficient, \
+    STR_LENGTH_ERROR_MSG, NOT_INT_VALUE_TEMPL, NEGATIVE_VALUE_TEMPL, \
+    N_LESS_THAN_K_ERROR_MSG
 
 
-class TestPermutation(unittest.TestCase):
-    """Класс для проверки генерации перестановок множества"""
-    err_msg = 'Параметр items не является неизменяемым множеством'
-    incorrect_inputs = (None, 'string', 1.1, [1, 2, 3], {1, 2, 3}, (1, 2, 3))
+class TestZeroOne(unittest.TestCase):
+    __incorrect_length_values = [None, 0, -1, 1.1, True, 'string']
 
-    def test_incorrect_inputs(self):
-        """Проверка выброса TypeError исключения при передаче
-        в параметр некорректного значения"""
-        for val in self.incorrect_inputs:
-            self.assertRaisesRegex(TypeError, self.err_msg,
-                                   generate_permutations, val)
+    @staticmethod
+    def __get_strings_to_check(length):
+        """Функция генерирует строки из 0 и 1 для проверки"""
+        if length == 0:
+            return []
+        return [('0'*length + str(bin(i))[2:])[-length:]
+                for i in range(2**length)
+                if '00' not in ('0'*length + str(bin(i))[2:])[-length:]]
 
-    def test_empty(self):
-        """Проверка генерации перестановок для пустого множества"""
-        self.assertCountEqual([], generate_permutations(frozenset()))
+    def test_incorrect_length_values(self):
+        """Проверяет выброс исключения при некорректном значении параметра
+        длина строки"""
+        for incorrect_val in self.__incorrect_length_values:
+            self.assertRaisesRegex(ValueError, STR_LENGTH_ERROR_MSG,
+                                   generate_strings, incorrect_val)
 
-    def test_single_num(self):
-        """Проверка генерации перестановок для множества из одного числа"""
-        self.assertCountEqual([[1]], generate_permutations(frozenset((1,))))
+    def test_zero_one(self):
+        """Проверяет генерацию строк из 0 и 1 для дины строки от 1 до 20"""
+        for i in range(1, 20):
+            self.assertCountEqual(generate_strings(i),
+                                  TestZeroOne.__get_strings_to_check(i))
 
-    def test_double_num(self):
-        """Проверка генерации перестановок для множества из двух чисел"""
-        self.assertCountEqual([[1, 2], [2, 1]],
-                              generate_permutations(frozenset((1, 2))))
 
-    def test_double_bool(self):
-        """Проверка генерации перестановок для множества из двух логических
-        значений"""
-        self.assertCountEqual([[True, False], [False, True]],
-                              generate_permutations(frozenset((True, False))))
+class TestBinomialCoefficient(unittest.TestCase):
+    def test_n_less_than_k(self):
+        """Проверяет выброс исключения при значении параметра n меньше чем k"""
+        self.assertRaisesRegex(ValueError, N_LESS_THAN_K_ERROR_MSG,
+                               binomial_coefficient, 1, 2)
 
-    def test_triple_num(self):
-        """Проверка генерации перестановок для множества из трех чисел"""
-        self.assertCountEqual([[1, 2, 3], [1, 3, 2], [2, 1, 3],
-                               [2, 3, 1], [3, 1, 2], [3, 2, 1]],
-                              generate_permutations(frozenset((1, 2, 3))))
+    def test_negative_n(self):
+        """Проверяет выброс исключения при отрицательном значении параметра n"""
+        self.assertRaisesRegex(ValueError, NEGATIVE_VALUE_TEMPL.format('n'),
+                               binomial_coefficient, -2, 2)
 
-    def test_triple_char(self):
-        """Проверка генерации перестановок для множества из трех символов"""
-        self.assertCountEqual([['a', 'b', 'c'], ['a', 'c', 'b'],
-                               ['b', 'a', 'c'], ['b', 'c', 'a'],
-                               ['c', 'a', 'b'], ['c', 'b', 'a']],
-                              generate_permutations(frozenset(('a', 'b', 'c'))))
+    def test_negative_k(self):
+        """Проверяет выброс исключения при отрицательном значении параметра k"""
+        self.assertRaisesRegex(ValueError, NEGATIVE_VALUE_TEMPL.format('k'),
+                               binomial_coefficient, 2, -2)
 
-    def test_quadruple_num(self):
-        """Проверка генерации перестановок для множества из четырех чисел"""
-        self.assertCountEqual([[1, 2, 3, 4], [1, 2, 4, 3], [1, 3, 2, 4],
-                               [1, 3, 4, 2], [1, 4, 2, 3], [1, 4, 3, 2],
-                               [2, 1, 3, 4], [2, 1, 4, 3], [2, 3, 1, 4],
-                               [2, 3, 4, 1], [2, 4, 1, 3], [2, 4, 3, 1],
-                               [3, 1, 2, 4], [3, 1, 4, 2], [3, 2, 1, 4],
-                               [3, 2, 4, 1], [3, 4, 1, 2], [3, 4, 2, 1],
-                               [4, 1, 2, 3], [4, 1, 3, 2], [4, 2, 1, 3],
-                               [4, 2, 3, 1], [4, 3, 1, 2], [4, 3, 2, 1]],
-                              generate_permutations(frozenset((1, 2, 3, 4))))
+    def test_n_is_not_int(self):
+        """Проверяет выброс исключения при нечисловом значении параметра n"""
+        self.assertRaisesRegex(ValueError, NOT_INT_VALUE_TEMPL.format('n'),
+                               binomial_coefficient, 'a', 2)
+
+    def test_k_is_not_int(self):
+        """Проверяет выброс исключения при нечисловом значении параметра k"""
+        self.assertRaisesRegex(ValueError, NOT_INT_VALUE_TEMPL.format('k'),
+                               binomial_coefficient, 2, 'b')
+
+    def test_binomial_coefficient_tiny(self):
+        """Проверка вычисления биномиального коэффициента при небольших
+        значениях параметров"""
+        pascals_triangle = [[1],
+                            [1, 1],
+                            [1, 2, 1],
+                            [1, 3, 3, 1],
+                            [1, 4, 6, 4, 1]]
+        for n in range(len(pascals_triangle)):
+            for k in range(len(pascals_triangle[n])):
+                for use_rec in [True, False]:
+                    res = binomial_coefficient(n, k, use_rec=use_rec)
+                    self.assertEqual(res, pascals_triangle[n][k])
+
+    def test_binomial_coefficient_middle(self):
+        """Проверка вычисления биномиального коэффициента при средних
+        значениях параметров"""
+        for use_rec in [True, False]:
+            res = binomial_coefficient(10, 5, use_rec=use_rec)
+            self.assertEqual(res, 252)
+
+    def test_binomial_coefficient_large(self):
+        """Проверка вычисления биномиального коэффициента при больших
+        значениях параметров"""
+        for use_rec in [True, False]:
+            res = binomial_coefficient(30, 20, use_rec=use_rec)
+            self.assertEqual(res, 30045015)
 
 
 if __name__ == '__main__':
