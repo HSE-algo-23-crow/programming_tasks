@@ -1,34 +1,30 @@
 import unittest
 
-from main import generate_strings, binomial_coefficient, \
-    STR_LENGTH_ERROR_MSG, NOT_INT_VALUE_TEMPL, NEGATIVE_VALUE_TEMPL, \
+from main import get_triangle_path_count, binomial_coefficient, \
+    PATH_LENGTH_ERROR_MSG, NOT_INT_VALUE_TEMPL, NEGATIVE_VALUE_TEMPL, \
     N_LESS_THAN_K_ERROR_MSG
 
 
-class TestZeroOne(unittest.TestCase):
+class TestTrianglePath(unittest.TestCase):
     __incorrect_length_values = [None, 0, -1, 1.1, True, 'string']
-
+    """Метод для проверки количества маршрутов с использованием общей формулы"""
     @staticmethod
-    def __get_strings_to_check(length):
-        """Функция генерирует строки из 0 и 1 для проверки"""
-        if length == 0:
-            return []
-        return [('0'*length + str(bin(i))[2:])[-length:]
-                for i in range(2**length)
-                if '00' not in ('0'*length + str(bin(i))[2:])[-length:]]
+    def __calculate_result(length):
+        return 1/3 * 2**length + 2/3 * (-1)**length
 
     def test_incorrect_length_values(self):
         """Проверяет выброс исключения при некорректном значении параметра
-        длина строки"""
+        длина маршрута"""
         for incorrect_val in self.__incorrect_length_values:
-            self.assertRaisesRegex(ValueError, STR_LENGTH_ERROR_MSG,
-                                   generate_strings, incorrect_val)
+            self.assertRaisesRegex(ValueError, PATH_LENGTH_ERROR_MSG,
+                                   get_triangle_path_count, incorrect_val)
 
-    def test_zero_one(self):
-        """Проверяет генерацию строк из 0 и 1 для дины строки от 1 до 20"""
-        for i in range(1, 20):
-            self.assertCountEqual(generate_strings(i),
-                                  TestZeroOne.__get_strings_to_check(i))
+    def test_triangle_path(self):
+        """Проверяет корректность вычисления количества маршрутов длиной
+        от 1 до 10"""
+        for i in range(1, 10):
+            self.assertEqual(get_triangle_path_count(i),
+                             TestTrianglePath.__calculate_result(i))
 
 
 class TestBinomialCoefficient(unittest.TestCase):
