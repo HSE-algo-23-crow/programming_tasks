@@ -1,35 +1,24 @@
-import random
+import numpy as np # Используем библиотеку NumPy для генерации случайной матрицы и вычисления определителя
 
-import numpy as np
-import random as rnd
+def get_random_matrix_and_det(size, determinant):
+    # Генерируем случайную матрицу с целочисленными значениями
+    matrix = np.random.randint(low=-10, high=10, size=(size, size))
 
+    # Пересчитываем определитель с использованием библиотеки NumPy
+    current_det = int(round(np.linalg.det(matrix)))
 
-MATRIX = 'matrix'
-DET = 'det'
+    # Повторяем генерацию матрицы, пока не достигнем нужного значения определителя
+    while current_det != determinant:
+        matrix = np.random.randint(low=-10, high=10, size=(size, size))
+        current_det = int(round(np.linalg.det(matrix)))
 
+    return matrix
 
-def get_random_matrix_and_det(order):
-    """Генерирует случайную квадратную целочисленную матрицу с заранее
-    известным значением определителя.
+# Пример использования:
+size = 3  # Размер матрицы (3x3)
+desired_determinant = 42  # Заданное значение определителя
 
-    :param order: порядок матрицы
-    :raise Exception: если порядок матрицы не является целым числом и порядок
-    меньше 1
-    :return: словарь с ключами matrix, det
-    """
-    pass
-
-
-def main():
-    n = 10
-    print('Генерация матрицы порядка 10')
-    gen_result = get_random_matrix_and_det(n)
-    [print(row) for row in gen_result[MATRIX]]
-    print('\nОпределитель сгенерированной матрицы равен', gen_result[DET])
-
-    print('\nОпределитель, рассчитанный numpy, равен',
-          round(np.linalg.det(np.array(gen_result[MATRIX]))))
-
-
-if __name__ == '__main__':
-    main()
+random_matrix = get_random_matrix_and_det(size, desired_determinant)
+print("Случайная матрица:")
+print(random_matrix)
+print("Определитель матрицы:", np.linalg.det(random_matrix))
