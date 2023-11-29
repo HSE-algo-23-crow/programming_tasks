@@ -21,29 +21,28 @@ def generate_strings(length: int) -> list[str]:
     """
     if type(length) != int or length < 1:
         raise ValueError(STR_LENGTH_ERROR_MSG)
-    chars = ''
-    strings = []
+    string = ''
+    lst = []
     if length == 0:
-        return strings
-    __add_zero(chars, length, strings)
-    __add_one(chars, length, strings)
-    return strings
+        return lst
+    insert_zero(string, length, lst)
+    insert_one(string, length, lst)
+    return lst
 
 
-def __add_zero(chars, length, strings):
-    chars += '0'
-    if len(chars) == length:
-        strings.append(chars)
+def insert_zero(string, ln, lst):
+    if len(string) == ln-1:
+        lst.append('0' + string)
     else:
-        __add_one(chars, length, strings)
+        insert_one('0' + string, ln, lst)
 
 
-def __add_one(chars, length, strings):
-    if len(chars) == length - 1:
-        strings.append(chars + '1')
+def insert_one(string, ln, lst):
+    if len(string) == ln-1:
+        lst.append('1' + string)
     else:
-        __add_one(chars + '1', length, strings)
-        __add_zero(chars + '1', length, strings)
+        insert_zero('1' + string, ln, lst)
+        insert_one('1' + string, ln, lst)
 
 
 def binomial_coefficient(n: int, k: int, use_rec=False) -> int:
@@ -59,8 +58,8 @@ def binomial_coefficient(n: int, k: int, use_rec=False) -> int:
     if check_error:
         raise ValueError(check_error)
     if use_rec:
-        return __bin_coef_rec_add(n, k)
-    return __bin_coef_iter_add(n, k)
+        return bin_rec(n, k)
+    return bin_iter(n, k)
 
 
 def __check_params(n: int, k: int) -> dict[str: bool, str: str]:
@@ -73,7 +72,7 @@ def __check_params(n: int, k: int) -> dict[str: bool, str: str]:
         return N_LESS_THAN_K_ERROR_MSG
 
 
-def __bin_coef_iter_add(n: int, k: int) -> int:
+def bin_iter(n: int, k: int) -> int:
     if n == k or k == 0:
         return 1
     pascal_triangle = [[1]] + [[1] + ([0] * i) + [1] for i in range(n)]
@@ -85,10 +84,10 @@ def __bin_coef_iter_add(n: int, k: int) -> int:
     return pascal_triangle[n][k]
 
 
-def __bin_coef_rec_add(n: int, k: int) -> int:
+def bin_rec(n: int, k: int) -> int:
     if n == k or k == 0:
         return 1
-    return __bin_coef_rec_add(n - 1, k) + __bin_coef_rec_add(n - 1, k - 1)
+    return bin_rec(n - 1, k) + bin_rec(n - 1, k - 1)
 
 
 def main():
