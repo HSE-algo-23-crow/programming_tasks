@@ -1,63 +1,146 @@
 import unittest
 
-from main import generate_permutations
+from main import get_path_count, PARAM_ERR_MSG
 
 
-class TestPermutation(unittest.TestCase):
-    """Класс для проверки генерации перестановок множества"""
-    err_msg = 'Параметр items не является неизменяемым множеством'
-    incorrect_inputs = (None, 'string', 1.1, [1, 2, 3], {1, 2, 3}, (1, 2, 3))
-
-    def test_incorrect_inputs(self):
-        """Проверка выброса TypeError исключения при передаче
-        в параметр некорректного значения"""
-        for val in self.incorrect_inputs:
-            self.assertRaisesRegex(TypeError, self.err_msg,
-                                   generate_permutations, val)
+class TestTablePath(unittest.TestCase):
+    def test_none(self):
+        """Проверяет выброс исключения при передаче None в качестве параметра"""
+        self.assertRaisesRegex(ValueError, PARAM_ERR_MSG, get_path_count,
+                               None)
 
     def test_empty(self):
-        """Проверка генерации перестановок для пустого множества"""
-        self.assertCountEqual([], generate_permutations(frozenset()))
+        """Проверяет выброс исключения при передаче пустого списка в
+        качестве параметра"""
+        self.assertRaisesRegex(ValueError, PARAM_ERR_MSG, get_path_count, [])
 
-    def test_single_num(self):
-        """Проверка генерации перестановок для множества из одного числа"""
-        self.assertCountEqual([[1]], generate_permutations(frozenset((1,))))
+    def test_empty_row(self):
+        """Проверяет выброс исключения при передаче списка с пустым списком в
+        качестве параметра"""
+        self.assertRaisesRegex(ValueError, PARAM_ERR_MSG, get_path_count,
+                               [[]])
 
-    def test_double_num(self):
-        """Проверка генерации перестановок для множества из двух чисел"""
-        self.assertCountEqual([[1, 2], [2, 1]],
-                              generate_permutations(frozenset((1, 2))))
+    def test_incorrect_values(self):
+        """Проверяет выброс исключения при наличии в матрице недопустимого
+        значения"""
+        incorrect_values = [-1, 1.1, 2, None, 'str', []]
+        for value in incorrect_values:
+            self.assertRaisesRegex(ValueError, PARAM_ERR_MSG,
+                                   get_path_count, [[1, value]])
 
-    def test_double_bool(self):
-        """Проверка генерации перестановок для множества из двух логических
-        значений"""
-        self.assertCountEqual([[True, False], [False, True]],
-                              generate_permutations(frozenset((True, False))))
+    def test_jag(self):
+        """Проверяет выброс исключения при наличии в матрице строк разной
+        длины"""
+        table = [[1, 0, 1],
+                 [1, 1]]
+        self.assertRaisesRegex(ValueError, PARAM_ERR_MSG, get_path_count,
+                               table)
 
-    def test_triple_num(self):
-        """Проверка генерации перестановок для множества из трех чисел"""
-        self.assertCountEqual([[1, 2, 3], [1, 3, 2], [2, 1, 3],
-                               [2, 3, 1], [3, 1, 2], [3, 2, 1]],
-                              generate_permutations(frozenset((1, 2, 3))))
+    def test_single(self):
+        """Проверяет поиск количества путей в матрице размером 1*1"""
+        self.assertEqual(get_path_count([[1]]), 1)
 
-    def test_triple_char(self):
-        """Проверка генерации перестановок для множества из трех символов"""
-        self.assertCountEqual([['a', 'b', 'c'], ['a', 'c', 'b'],
-                               ['b', 'a', 'c'], ['b', 'c', 'a'],
-                               ['c', 'a', 'b'], ['c', 'b', 'a']],
-                              generate_permutations(frozenset(('a', 'b', 'c'))))
+    def test_single_none(self):
+        """Проверяет поиск количества путей в матрице размером 1*1 с ячейкой,
+        запрещенной к посещению"""
+        self.assertEqual(get_path_count([[0]]), 0)
 
-    def test_quadruple_num(self):
-        """Проверка генерации перестановок для множества из четырех чисел"""
-        self.assertCountEqual([[1, 2, 3, 4], [1, 2, 4, 3], [1, 3, 2, 4],
-                               [1, 3, 4, 2], [1, 4, 2, 3], [1, 4, 3, 2],
-                               [2, 1, 3, 4], [2, 1, 4, 3], [2, 3, 1, 4],
-                               [2, 3, 4, 1], [2, 4, 1, 3], [2, 4, 3, 1],
-                               [3, 1, 2, 4], [3, 1, 4, 2], [3, 2, 1, 4],
-                               [3, 2, 4, 1], [3, 4, 1, 2], [3, 4, 2, 1],
-                               [4, 1, 2, 3], [4, 1, 3, 2], [4, 2, 1, 3],
-                               [4, 2, 3, 1], [4, 3, 1, 2], [4, 3, 2, 1]],
-                              generate_permutations(frozenset((1, 2, 3, 4))))
+    def test_double(self):
+        """Проверяет поиск количества путей в матрице размером 2*2"""
+        table = [[1, 1],
+                 [1, 1]]
+        self.assertEqual(get_path_count(table), 2)
+
+    def test_double_with_none(self):
+        """Проверяет поиск количества путей в матрице размером 2*2 с ячейкой,
+        запрещенной к посещению"""
+        table = [[1, 0],
+                 [1, 1]]
+        self.assertEqual(get_path_count(table), 1)
+
+    def test_triple(self):
+        """Проверяет поиск количества путей в матрице размером 3*3"""
+        table = [[1, 1, 1],
+                 [1, 1, 1],
+                 [1, 1, 1]]
+        self.assertEqual(get_path_count(table), 6)
+
+    def test_triple_no_path(self):
+        """Проверяет поиск количества путей в матрице размером 3*3,
+        пути не существует"""
+        table = [[1, 0, 1],
+                 [0, 1, 1],
+                 [1, 1, 1]]
+        self.assertEqual(get_path_count(table), 0)
+
+    def test_rectangle(self):
+        """Проверяет поиск количества путей в прямоугольной матрице
+        размером 2*3"""
+        table = [[1, 1, 1],
+                 [1, 1, 1]]
+        self.assertEqual(get_path_count(table), 3)
+
+    def test_rectangle_with_none(self):
+        """Проверяет поиск количества путей в прямоугольной матрице
+        размером 2*3 с ячейкой, запрещенной к посещению"""
+        table = [[1, 0, 0],
+                 [1, 1, 1]]
+        self.assertEqual(get_path_count(table), 1)
+
+    def test_square(self):
+        """Проверяет поиск количества путей в квадратной матрице размером 6*6"""
+        table = [[1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1]]
+        self.assertEqual(get_path_count(table), 252)
+
+    def test_square_with_none(self):
+        """Проверяет поиск количества путей в квадратной матрице размером 6*6
+         с ячейками, запрещенными к посещению"""
+        table = [[1, 1, 1, 1, 1, 0],
+                 [1, 1, 1, 1, 0, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 0, 1, 1, 1],
+                 [1, 0, 1, 1, 1, 1],
+                 [0, 1, 1, 1, 1, 1]]
+        self.assertEqual(get_path_count(table), 100)
+
+    def test_rectangle_large(self):
+        """Проверяет поиск количества путей в прямоугольной матрице
+        размером 12*6"""
+        table = [[1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1]]
+        self.assertEqual(get_path_count(table), 4368)
+
+    def test_rectangle_large_with_none(self):
+        """Проверяет поиск количества путей в прямоугольной матрице
+        размером 12*6 с ячейками, запрещенными к посещению"""
+        table = [[1, 1, 1, 1, 1, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 0, 0, 1],
+                 [1, 1, 1, 1, 1, 1]]
+        self.assertEqual(get_path_count(table), 2)
 
 
 if __name__ == '__main__':
