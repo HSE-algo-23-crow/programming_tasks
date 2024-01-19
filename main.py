@@ -29,8 +29,9 @@ def validate_table_raises_ex(price_table: list[list[float | int | None]]) -> Non
     if price_table is not list[list[float | int | None]]:
         raise ValueError(PARAM_ERR_MSG)
     if len(price_table) != len(price_table[0]):
-    for row_index in range(len(price_table)):
-        for column_index in range(len(price_table[row_index])):
+        for row_index in range(len(price_table)):
+            for column_index in range(len(price_table[row_index])):
+                pass
 def ad():
     pass
 
