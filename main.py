@@ -21,8 +21,18 @@ def get_min_cost_path(price_table: list[list[float | int | None]]) ->\
     path - путь, список кортежей с индексами ячеек, или None если пути
     не существует.
     """
+    validate_table_raises_ex(price_table)
     pass
 
+
+def validate_table_raises_ex(price_table: list[list[float | int | None]]) -> None:
+    if price_table is not list[list[float | int | None]]:
+        raise ValueError(PARAM_ERR_MSG)
+    if len(price_table) != len(price_table[0]):
+    for row_index in range(len(price_table)):
+        for column_index in range(len(price_table[row_index])):
+def ad():
+    pass
 
 def main():
     table = [[1, 2, 2],
