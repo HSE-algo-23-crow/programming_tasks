@@ -100,10 +100,6 @@ def check_data_type(data):
     """
     return isinstance(data, float) or isinstance(data, int) or data is None
 
-
-def ad():
-    pass
-
 def main():
     table = [[1, 2, 2],
              [3, None, 2],
