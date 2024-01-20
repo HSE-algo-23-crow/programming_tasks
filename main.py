@@ -25,7 +25,7 @@ def get_min_cost_path(price_table: list[list[float | int | None]]) ->\
     if (price_table[0][0] is None) or (price_table[-1][-1] is None):
         return {COST: None, PATH: None}
     change_none_to_inf(price_table)
-    cost_table = get_cost_table(price_table)
+    cost_table = get_cost_table(price_table[:])
     path_back = get_path_back(cost_table)
     if path_back is None:
         return {COST: None, PATH: None}
@@ -108,7 +108,10 @@ def main():
     table = [[1, 2, 2],
              [3, None, 2],
              [None, 1, 2]]
-    print(get_min_cost_path(table))
+    table_copy = table[:]
+    for row_index in range(len(table_copy)):
+        table_copy[row_index] = table[row_index][:]
+    print(get_min_cost_path(table_copy))
 
 
 if __name__ == '__main__':
