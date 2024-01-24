@@ -1,7 +1,15 @@
 import unittest
 
-from main import get_path_count, PARAM_ERR_MSG
-
+from main import get_path_count, generate_matrix_with_path_count, PARAM_ERR_MSG
+class TestPathGenerationAndCounting(unittest.TestCase):
+    def test_matrix_generation_and_path_count(self):
+        # Тестирование для различных количеств путей
+        for target_path_count in [1, 5, 10]:
+            with self.subTest(target_path_count=target_path_count):
+                matrix = generate_matrix_with_path_count(target_path_count)
+                calculated_path_count = get_path_count(matrix)
+                self.assertEqual(calculated_path_count, target_path_count,
+                                 f"Failed for target path count: {target_path_count}")
 
 class TestTablePath(unittest.TestCase):
     def test_none(self):

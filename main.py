@@ -1,6 +1,31 @@
 PARAM_ERR_MSG = 'Таблица не является прямоугольной матрицей со значениями 0 1'
+import random
+import numpy as np
 
+def generate_matrix_with_path_count(target_path_count, min_size=3, max_size=5):
+    rows = random.randint(min_size, max_size)
+    cols = random.randint(min_size, max_size)
+    matrix = [[0 for _ in range(cols)] for _ in range(rows)]
 
+    while True:
+        current_path_count = get_path_count(matrix)
+        if current_path_count == target_path_count:
+            break
+        elif current_path_count > target_path_count:
+            # Случайно выбираем ячейку для уменьшения путей
+            possible_cells = [(i, j) for i in range(rows) for j in range(cols) if matrix[i][j] == 1]
+        else:
+            # Случайно выбираем ячейку для увеличения путей
+            possible_cells = [(i, j) for i in range(rows) for j in range(cols) if matrix[i][j] == 0]
+
+        if not possible_cells:
+            # Если нет подходящих ячеек для изменения, прерываем цикл
+            break
+
+        row, col = random.choice(possible_cells)
+        matrix[row][col] = 1 - matrix[row][col]  # Переключаем состояние ячейки
+
+    return matrix
 def get_path_count(allow_table: list[list[int]]) -> int:
     """Возвращает количество допустимых путей в таблице из правого верхнего угла
     в левый нижний.
@@ -49,7 +74,6 @@ def main():
              [1, 0, 1],
              [1, 1, 1]]
     print(get_path_count(table))
-
 
 if __name__ == '__main__':
     main()
