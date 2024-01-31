@@ -13,6 +13,15 @@ class ProfitValueError(Exception):
         super().__init__(message)
 
 
+def sums(length, total_sum):
+    if length == 1:
+        yield (total_sum,)
+    else:
+        for value in range(total_sum + 1):
+            for permutation in sums(length - 1, total_sum - value):
+                yield (value,) + permutation
+
+
 def get_invest_distributions(profit_matrix: list[list[int]]) -> \
         dict[str: int, str: list[list[int]]]:
     """Рассчитывает максимально возможную прибыль и распределение инвестиций
@@ -34,43 +43,31 @@ def get_invest_distributions(profit_matrix: list[list[int]]) -> \
     n = len(profit_matrix[0])  # number of projects
     m = len(profit_matrix)  # number of investment levels
 
-    # Initialize the dp and paths lists
-    dp = [[0] * (m + 1) for _ in range(n + 1)]
-    paths = [[[[] for _ in range(n + 1)] for _ in range(m + 1)] for _ in range(n + 1)]
+    routes = list(sums(n, m))
 
-    # Fill the dp and paths lists
-    for i in range(1, n + 1):
-        for j in range(1, m + 1):
-            for k in range(j + 1):
-                if k > 0:
-                    new_profit = profit_matrix[k - 1][i - 1] + dp[i - 1][j - k]
-                    if new_profit > dp[i][j]:
-                        dp[i][j] = new_profit
-                        paths[i][j] = [path + [k] for path in paths[i - 1][j - k]]
-                    elif new_profit == dp[i][j]:
-                        paths[i][j] += [path + [k] for path in paths[i - 1][j - k]]
-                else:
-                    #add zero investment to paths and dp
-                    paths[i][j] = [[0] + path for path in paths[i - 1][j]]
-                    dp[i][j] = dp[i - 1][j]
-            print(paths[1::])
+    max_sum = 0
+    max_routes = []
 
-    #remove duplicates
-    paths[n][m] = list(set(tuple(path) for path in paths[n][m]))
+    for i in routes:
+        cur_sum = 0
+        cur_route = list(i)
+        for j in range(len(cur_route)):
+            if cur_route[j] == 0:
+                continue
+            cur_sum += profit_matrix[cur_route[j]-1][j]
 
-    i = 0
-    while i < len(paths[n][m]):
-        if sum(paths[n][m][i]) != m or len(paths[n][m][i]) != n:
-            paths[n][m].pop(i)
-        else:
-            i+=1
+        if cur_sum > max_sum:
+            max_sum = cur_sum
+            max_routes = [i]
+        elif cur_sum == max_sum:
+            max_routes.append(i)
 
     # Return the maximum profit and the corresponding distributions of investments
-    return {PROFIT: dp[n][m], DISTRIBUTIONS: paths[n][m]}
+    return {PROFIT: max_sum, DISTRIBUTIONS: max_routes}
 
 
 def validate_profit_matrix(profit_matrix):
-    if not isinstance(profit_matrix, list) or not all(isinstance(row, list) and all(isinstance(value, int) for value in row) for row in profit_matrix):
+    if profit_matrix is None or len(profit_matrix) == 0 or not isinstance(profit_matrix, list) or not all(isinstance(row, list) and all(isinstance(value, int) for value in row) for row in profit_matrix):
         raise ValueError(PARAM_ERR_MSG)
     for column in range(1, len(profit_matrix)):
         if len(profit_matrix[column]) != len(profit_matrix[0]):
@@ -85,13 +82,17 @@ def validate_profit_matrix(profit_matrix):
             if profit_matrix[column][line] < 0:
                 raise ProfitValueError(NEG_PROFIT_ERR_MSG, line, column)
 
+    for i in profit_matrix:
+        if len(i) == 0:
+            raise ValueError(PARAM_ERR_MSG)
+
 
 def main():
     profit_matrix = [[5, 7, 2, 10],
-                  [9, 8, 4, 15],
-                  [11, 10, 5, 16],
-                  [12, 12, 8, 17],
-                  [14, 15, 9, 18]]
+                     [9, 8, 4, 15],
+                     [11, 10, 5, 16],
+                     [12, 12, 8, 17],
+                     [14, 15, 9, 18]]
     print(get_invest_distributions(profit_matrix))
 
 
