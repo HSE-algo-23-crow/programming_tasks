@@ -39,7 +39,6 @@ def get_invest_distributions(profit_matrix: list[list[int]]) -> \
 
     max_profit = max_profit_table[-1][-1]
     distribution = get_distribution(max_profit_table, profit_matrix)
-    print(max_profit_table)
     return {PROFIT: max_profit, DISTRIBUTIONS: [distribution]}
 
 
