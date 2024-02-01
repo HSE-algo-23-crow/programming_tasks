@@ -1,3 +1,6 @@
+import copy
+
+
 PROFIT = 'profit'
 DISTRIBUTION = 'distribution'
 PARAM_ERR_MSG = ('Таблица прибыли от проектов не является прямоугольной '
@@ -31,7 +34,7 @@ def get_invest_distribution(profit_matrix: list[list[int]]) -> \
 
     is_error(profit_matrix)
 
-    profit_matrix_copy = profit_matrix.copy()
+    profit_matrix_copy = copy.deepcopy(profit_matrix)
     path_matrix = []
     for j in range(len(profit_matrix[0]) - 1):
         matrix = [[0, 0]]
@@ -86,7 +89,7 @@ def is_error(profit_matrix: list[list[int]]):
         raise ValueError(PARAM_ERR_MSG)
 
     first_row_len = len(profit_matrix[0])
-    for row in profit_matrix:
+    for row_idx, row in enumerate(profit_matrix):
         # Проверка на то, что в матрице нет строк разной длины
         if len(row) != first_row_len:
             raise ValueError(PARAM_ERR_MSG)
@@ -94,10 +97,12 @@ def is_error(profit_matrix: list[list[int]]):
             # Проверка на то, что в матрице только тип float и int
             if not isinstance(item, int) and not isinstance(item, float):
                 raise ValueError(PARAM_ERR_MSG)
-        for item in row:
+        for col_idx, item in enumerate(row):
             # Проверка на то, что в матрице нет отрицательных значений
             if item < 0:
-                raise ProfitValueError(NEG_PROFIT_ERR_MSG)
+                raise ProfitValueError(NEG_PROFIT_ERR_MSG, col_idx, row_idx)
+            if row_idx > 0 and profit_matrix[row_idx - 1][col_idx] > item:
+                raise ProfitValueError(DECR_PROFIT_ERR_MSG, col_idx, row_idx)
 
 
 def main():
