@@ -35,11 +35,61 @@ def get_invest_distributions(profit_matrix: list[list[int]]) -> \
 
     validate_profit_matrix(profit_matrix)
 
-    max_profit_table = get_max_profit_table(profit_matrix)
+    (max_profit, paths) = get_max_profit(profit_matrix)
 
-    max_profit = max_profit_table[-1][-1]
-    distribution = get_distribution(max_profit_table, profit_matrix)
-    return {PROFIT: max_profit, DISTRIBUTIONS: [distribution]}
+    return {PROFIT: max_profit, DISTRIBUTIONS: paths}
+
+
+def get_max_profit(profit_matrix: list[list[int]]) -> tuple[int, list[list[int]]]:
+    project_count = len(profit_matrix[0])
+    level_count = len(profit_matrix)
+
+    max_profits: dict[int, int] = {
+        0: 0
+    }
+    max_profit_paths: dict[int, list[list[int]]] = {
+        0: [[0]]
+    }
+
+    # Делаем таблицу с прибылью для первого проекта в качестве первоначальной оптимальной таблицы
+    for init_profit in range(1, level_count + 1):
+        max_profits[init_profit] = profit_matrix[init_profit - 1][0]
+        max_profit_paths[init_profit] = [[init_profit]]
+
+    for project_index in range(1, project_count):
+        # Делаем копии, чтобы в моменте подсчета вариантов распределения инвестиций для двух проектов не было
+        # уже заменных значений, во избежании ошибок
+        copy_max_profits = max_profits.copy()
+        copy_max_profit_paths = copy.deepcopy(max_profit_paths)
+        for level_index in range(1, level_count + 1):
+            for profit in range(1, level_index + 1):
+                target_profit = level_index - profit # Ищем какой уровень нам нужно взять из оптимальной таблицы
+                current_profit = copy_max_profits[target_profit] + profit_matrix[profit - 1][project_index]
+
+                if current_profit > max_profits[level_index]:
+                    # Если мы нашли профит больше, чем текущий, то заменяем его
+                    max_profits[level_index] = current_profit
+                    max_profit_paths[level_index].clear()
+                    # Очищаем старый путь и записываем новые пути к нему
+                    for path in copy_max_profit_paths[target_profit]:
+                        max_profit_paths[level_index].append([*path[:], profit])
+
+                elif current_profit == max_profits[level_index]:
+                    for path in copy_max_profit_paths[target_profit]:
+                        max_profit_paths[level_index].append([*path[:], profit])
+        for (key, paths) in max_profit_paths.items():
+            for path in paths:
+                # Добавляем нули в пути, если они оптимальные, но были добавлены в прошлой итерации и не были удалены
+                if len(path) < project_index + 1:
+                    path.append(0)
+
+
+        max_profit_paths[0][0].append(0)
+
+
+
+    return tuple([max_profits[len(profit_matrix)], max_profit_paths[level_count]])
+
 
 
 def validate_profit_matrix(profit_matrix: list[list[int]]) -> None:
@@ -50,59 +100,21 @@ def validate_profit_matrix(profit_matrix: list[list[int]]) -> None:
     if profit_matrix is None or len(profit_matrix) == 0 or len(profit_matrix[0]) == 0:
         raise ValueError(PARAM_ERR_MSG)
     max_length = max(map(len, profit_matrix))
-    for i, row in enumerate(profit_matrix):
+    for level_index, row in enumerate(profit_matrix):
         if max_length != len(row):
             raise ValueError(PARAM_ERR_MSG)
 
-        for j, num in enumerate(row):
-            if i != 0:
-                if profit_matrix[i - 1][j] > num:
-                    raise ProfitValueError(DECR_PROFIT_ERR_MSG, j, i)
+        for project_index, num in enumerate(row):
+            if level_index != 0:
+                if profit_matrix[level_index - 1][project_index] > num:
+                    raise ProfitValueError(DECR_PROFIT_ERR_MSG, project_index, level_index)
             if not isinstance(num, int):
                 raise ValueError(PARAM_ERR_MSG)
             if num < 0:
-                raise ProfitValueError(NEG_PROFIT_ERR_MSG, j, i)
+                raise ProfitValueError(NEG_PROFIT_ERR_MSG, project_index, level_index)
 
 
-def get_max_profit_table(profit_matrix):
-    project_count = len(profit_matrix[0]) + 1
-    level_count = len(profit_matrix) + 1
 
-    max_profit_matrix = [ [0] * level_count for i in range(project_count)]
-
-    for project_index in range(1, project_count):
-
-        for level_index in range(1, level_count):
-            max_profit = max_profit_matrix[project_index - 1][level_index]
-
-            for prev_level in range(1, level_index + 1):
-                another_level = level_index - prev_level
-                current_profit = profit_matrix[prev_level - 1][project_index - 1]
-
-                max_profit = max(max_profit, current_profit + max_profit_matrix[project_index - 1][another_level])
-
-            max_profit_matrix[project_index][level_index] = max_profit
-
-    return max_profit_matrix
-
-
-def get_distribution(max_profit_matrix, profit_matrix):
-    project_count = len(profit_matrix[0])
-    level_count = len(profit_matrix)
-    distribution = [0] * project_count
-
-    target_level = level_count
-
-    for project_index in range(project_count, 0, -1):
-
-        for level_index in range(0, target_level + 1):
-            another_level = target_level - level_index - 1
-            if max_profit_matrix[project_index][target_level] == max_profit_matrix[project_index - 1][level_index] + profit_matrix[another_level][project_index - 1]:
-                distribution[project_index - 1] = another_level + 1
-                target_level = level_index
-                break
-
-    return distribution
 
 
 def main():
