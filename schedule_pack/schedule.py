@@ -1,7 +1,7 @@
 from schedule_pack.task import Task
 from schedule_pack.schedule_item import ScheduleItem
 from schedule_pack.errors import ScheduleArgumentError
-from schedule_pack.constants import ERR_TASKS_NOT_LIST_MSG,\
+from schedule_pack.constants import ERR_TASKS_NOT_LIST_MSG, \
     ERR_TASKS_EMPTY_LIST_MSG, ERR_INVALID_TASK_TEMPL, \
     ERR_EXECUTOR_NOT_INT_MSG, ERR_EXECUTOR_OUT_OF_RANGE_MSG, SCHEDULE_STR_TEMPL
 
@@ -94,13 +94,34 @@ class Schedule:
 
     def __calculate_duration(self) -> float:
         """Вычисляет и возвращает минимальную продолжительность расписания"""
-        pass
+        max_task_duration = max(task.duration for task in self.__tasks)
+        average_one_person_duration = sum(task.duration for task in self.__tasks) / len(self.__executor_schedule)
+        optimate_duration = max(max_task_duration, average_one_person_duration)
+        return float(optimate_duration)
 
     def __fill_schedule_for_each_executor(self) -> None:
         """Процедура составляет расписание из элементов ScheduleItem для каждого
         исполнителя, на основе исходного списка задач и общей продолжительности
         расписания."""
-        pass
+        current_task_ind = 0
+        current_task_last_duration = self.__tasks[current_task_ind].duration
+        for executor_ind in range(len(self.__executor_schedule)):
+            current_executor = self.__executor_schedule[executor_ind]
+            executor_todo_time = self.__duration - current_executor[len(current_executor) - 1].duration if len(current_executor) > 0 else self.__duration
+            while (executor_todo_time != 0 and not(current_task_ind == len(self.__tasks) and current_task_last_duration == 0)):
+                current_task = self.__tasks[current_task_ind]
+                task_start_time = current_executor[-1].end if len(current_executor) > 0 else 0
+                task_duration = min(self.__duration - task_start_time, current_task_last_duration)
+                self.__executor_schedule[executor_ind].append(ScheduleItem(current_task, task_start_time, float(task_duration)))
+                current_task_last_duration -= task_duration
+                executor_todo_time -= task_duration
+                if not(current_task_last_duration):
+                    current_task_ind +=1
+                    current_task_last_duration = self.__tasks[current_task_ind].duration if current_task_ind < len(self.__tasks) else 0
+            if (executor_todo_time):
+                start_time = self.__duration - executor_todo_time
+                current_executor.append(ScheduleItem(None,start_time,float(executor_todo_time),True))
+
 
     @staticmethod
     def __validate_params(tasks: list[Task]) -> None:
