@@ -28,9 +28,31 @@ def get_invest_distribution(profit_matrix: list[list[int]]) -> \
     profit - максимально возможная прибыль от инвестиций,
     distribution - распределение инвестиций между проектами.
     """
-    pass
 
 
+    if not all(isinstance(row, list) for row in profit_matrix) or not profit_matrix:
+        raise ValueError(PARAM_ERR_MSG)
+
+    num_projects = len(profit_matrix[0])
+    num_levels = len(profit_matrix)
+
+    if num_projects == 0 or num_levels == 0:
+        return {PROFIT: 0, DISTRIBUTION: [0] * num_projects}
+
+    max_profit = 0
+    distribution = [0] * num_projects
+
+    for i in range(num_levels):
+        for j in range(num_projects):
+            if profit_matrix[i][j] < 0:
+                raise ProfitValueError(NEG_PROFIT_ERR_MSG, j, i)
+            if i > 0 and profit_matrix[i][j] < profit_matrix[i - 1][j]:
+                raise ProfitValueError(DECR_PROFIT_ERR_MSG, j, i)
+            if profit_matrix[i][j] > distribution[j]:
+                max_profit += profit_matrix[i][j] - distribution[j]
+                distribution[j] = profit_matrix[i][j]
+
+    return {PROFIT: max_profit, DISTRIBUTION: distribution}
 def main():
     profit_matrix = [[15, 18, 16, 17],
                      [20, 22, 23, 19],
