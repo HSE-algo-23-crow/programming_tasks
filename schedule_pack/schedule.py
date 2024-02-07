@@ -1,7 +1,7 @@
 from schedule_pack.task import Task
 from schedule_pack.schedule_item import ScheduleItem
 from schedule_pack.errors import ScheduleArgumentError
-from schedule_pack.constants import ERR_TASKS_NOT_LIST_MSG,\
+from schedule_pack.constants import ERR_TASKS_NOT_LIST_MSG, \
     ERR_TASKS_EMPTY_LIST_MSG, ERR_INVALID_TASK_TEMPL, \
     ERR_EXECUTOR_NOT_INT_MSG, ERR_EXECUTOR_OUT_OF_RANGE_MSG, SCHEDULE_STR_TEMPL
 
@@ -94,13 +94,53 @@ class Schedule:
 
     def __calculate_duration(self) -> float:
         """Вычисляет и возвращает минимальную продолжительность расписания"""
-        pass
+        # print(self.executor_count)
+        duration_max = 0
+        duration_sum = 0
+        for task in self.__tasks:
+            duration_max = max(duration_max, task.duration)
+            duration_sum += task.duration
+
+        return max(duration_max, duration_sum / self.executor_count)
 
     def __fill_schedule_for_each_executor(self) -> None:
         """Процедура составляет расписание из элементов ScheduleItem для каждого
         исполнителя, на основе исходного списка задач и общей продолжительности
         расписания."""
-        pass
+        durations = [0] * self.executor_count
+        duration_max = self.duration
+        cur_exec_ind = 0
+        schedule = [[] for _ in range(self.executor_count)]
+
+        for task in self.__tasks:
+            start_time = durations[cur_exec_ind]
+            is_downtime = False
+            # если время работы меньше того, сколько ещё может отработать работник, то берём саму работу, иначе оставшеся время
+            duration = min(task.duration, duration_max - durations[cur_exec_ind])
+            schedule_item = ScheduleItem(task, start_time, duration, is_downtime)
+            schedule[cur_exec_ind].append(schedule_item)
+            durations[cur_exec_ind] += duration
+
+            # сюда попадаем как только понимаем, что время работника закончилось. переход к новому
+            if durations[cur_exec_ind] == duration_max:
+                cur_exec_ind += 1  # т.к достингли максимума, то двигаем индекс работника
+                # получаем оставшиеся время работу, на которой закончили
+                duration = task.duration - duration
+                if duration:  # чтобы не создавалась новая задача, если мы подошли к концу и задача закончилась
+                    schedule_item = ScheduleItem(task, 0, duration, is_downtime)
+                    schedule[cur_exec_ind].append(schedule_item)
+                    durations[cur_exec_ind] += duration
+
+        while cur_exec_ind != self.executor_count:
+            if len(schedule[cur_exec_ind]) > 0: # если уже что-то есть, но остаётся простой
+                start_time = schedule[cur_exec_ind][-1].end # конец предыдущего - начало времни простоя
+                schedule_item = ScheduleItem(None, start_time, duration_max - start_time, True)
+            else: # где уже только простой. работник без дела
+                schedule_item = ScheduleItem(None, 0, duration_max, True)
+            schedule[cur_exec_ind].append(schedule_item)
+            cur_exec_ind += 1
+
+        self.__executor_schedule = schedule
 
     @staticmethod
     def __validate_params(tasks: list[Task]) -> None:
