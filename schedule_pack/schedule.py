@@ -94,13 +94,46 @@ class Schedule:
 
     def __calculate_duration(self) -> float:
         """Вычисляет и возвращает минимальную продолжительность расписания"""
+        t_max = max(task.duration for task in self.__tasks)
+        t_avg = sum(task.duration for task in self.__tasks) / self.executor_count
+        return max(t_max, t_avg)
         pass
 
     def __fill_schedule_for_each_executor(self) -> None:
         """Процедура составляет расписание из элементов ScheduleItem для каждого
         исполнителя, на основе исходного списка задач и общей продолжительности
         расписания."""
-        pass
+
+        temp_tasks = list(self.__tasks)
+
+        current_durations = [0.0 for _ in range(self.executor_count)]
+
+        executor = 0
+
+        for task in temp_tasks:
+            start_time = current_durations[executor]
+            duration = task.duration
+            is_downtime = False
+            dur = min(duration, self.duration-current_durations[executor])
+            schedule_item = ScheduleItem(task, start_time, dur,
+                                                is_downtime)
+            self.__executor_schedule[executor].append(schedule_item)
+            current_durations[executor] += dur
+            if current_durations[executor] == self.duration:
+                executor += 1
+                if dur != task.duration:
+                    schedule_item_second = ScheduleItem(task, 0, task.duration - dur, is_downtime)
+                    self.__executor_schedule[executor].append(schedule_item_second)
+                    current_durations[executor] += task.duration - dur
+
+        for lazy_executor in range(executor, self.executor_count):
+            if len(self.__executor_schedule[lazy_executor]) == 0:
+                downtime = ScheduleItem(None, 0, self.duration, True)
+                self.__executor_schedule[lazy_executor].append(downtime)
+            elif self.__executor_schedule[lazy_executor][-1].end < self.duration:
+                downtime = ScheduleItem(None, self.__executor_schedule[lazy_executor][-1].end,
+                                        self.duration - self.__executor_schedule[lazy_executor][-1].end, True)
+                self.__executor_schedule[lazy_executor].append(downtime)
 
     @staticmethod
     def __validate_params(tasks: list[Task]) -> None:
