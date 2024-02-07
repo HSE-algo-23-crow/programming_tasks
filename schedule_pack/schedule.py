@@ -94,13 +94,57 @@ class Schedule:
 
     def __calculate_duration(self) -> float:
         """Вычисляет и возвращает минимальную продолжительность расписания"""
-        pass
+        sum_durations = 0
+        arr_durations = []
+
+        for task in self.__tasks:
+            sum_durations += task.duration
+            arr_durations.append(task.duration)
+
+        avg_duration = sum_durations // len(self.__executor_schedule)
+
+        # ! Учитываем случай, если средняя арифм. длин работ меньше длины работы с максимальной продолжительностью.
+        # В данном случае мин. продолжительностью расписания является макс. длина, а не ср. арифм. длин работ.
+        return max(avg_duration, max(arr_durations))
 
     def __fill_schedule_for_each_executor(self) -> None:
         """Процедура составляет расписание из элементов ScheduleItem для каждого
         исполнителя, на основе исходного списка задач и общей продолжительности
         расписания."""
-        pass
+        executors_list = self.__executor_schedule
+        executors_count = len(self.__executor_schedule)
+        tasks_list = self.__tasks
+        tasks_count = len(self.__tasks)
+        schedule_duration = self.__duration
+
+        overflow = False
+        overflow_left_task_time = 0
+        task_idx = 0
+        for executor_idx in range(executors_count):
+            executor_left_time = schedule_duration
+            while executor_left_time != 0:
+                if tasks_count != 0:
+                    task, task_time = tasks_list[task_idx], tasks_list[task_idx].duration
+                    if overflow:
+                        task_time = overflow_left_task_time
+                    if executor_left_time >= task_time:
+                        executor_task = ScheduleItem(task, schedule_duration - executor_left_time, task_time)
+                        executors_list[executor_idx].append(executor_task)
+                        overflow = False
+                        executor_left_time -= task_time
+                        task_idx += 1
+                        tasks_count -= 1
+                    else:
+                        executor_task = ScheduleItem(task, schedule_duration - executor_left_time, executor_left_time)
+                        executors_list[executor_idx].append(executor_task)
+                        overflow = True
+                        overflow_left_task_time = task_time - executor_left_time
+                        executor_left_time = 0
+                else:
+                    executor_task = ScheduleItem(None, schedule_duration - executor_left_time,
+                                                 executor_left_time, True)
+                    executors_list[executor_idx].append(executor_task)
+                    executor_left_time = 0
 
     @staticmethod
     def __validate_params(tasks: list[Task]) -> None:
