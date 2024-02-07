@@ -1,4 +1,12 @@
-from schedule_pack import Schedule, Task
+from schedule_pack import Schedule, Task, ScheduleItem
+
+def __calculate_duration(self) -> float:
+    """Вычисляет и возвращает минимальную продолжительность расписания"""
+
+def __fill_schedule_for_each_executor(self) -> None:
+    """Процедура составляет расписание из элементов ScheduleItem для каждого
+    исполнителя, на основе исходного списка задач и общей продолжительности
+    расписания."""
 
 
 """Для решения задачи составления оптимального расписания с использованием 
@@ -44,6 +52,7 @@ def main():
     # Инициализируем экземпляр класса Schedule
     # при этом будет рассчитано расписание для каждого исполнителя
     schedule = Schedule(tasks, 5)
+
 
     # Выведем в консоль полученное расписание
     print(schedule)

@@ -94,14 +94,65 @@ class Schedule:
 
     def __calculate_duration(self) -> float:
         """Вычисляет и возвращает минимальную продолжительность расписания"""
-        pass
+        sum = 0
+        max_duration = 0
+
+        for i in self.__tasks:
+            sum += i.duration
+            if i.duration > max_duration:
+                max_duration = i.duration
+        return max(sum / self.executor_count, max_duration)
 
     def __fill_schedule_for_each_executor(self) -> None:
         """Процедура составляет расписание из элементов ScheduleItem для каждого
         исполнителя, на основе исходного списка задач и общей продолжительности
         расписания."""
-        pass
+        task_idx = 0
+        min_time = self.__duration
+        worker_idx = 0
+        task_time = 0
+        time_residue = 0
 
+        while (task_time <= min_time and task_idx < len(self.__tasks)):
+            if time_residue:
+                cur_task_time = time_residue
+                time_residue = 0
+            else:
+                cur_task_time = self.tasks[task_idx].duration
+
+            start_time = task_time
+            if (task_time + cur_task_time <= min_time):
+                task_time += cur_task_time
+                self.__executor_schedule[worker_idx].append(
+                    (ScheduleItem(self.__tasks[task_idx], start_time, task_time)))
+                task_idx += 1
+            elif task_time == min_time:
+                worker_idx += 1
+                task_time = 0
+            else:
+                time_residue = self.tasks[task_idx].duration - (min_time - start_time)
+                task_time = min_time - start_time
+                self.__executor_schedule[worker_idx].append(ScheduleItem(self.__tasks[task_idx], start_time, task_time))
+                worker_idx += 1
+                task_time = 0
+
+        for worker_idx in range(len(self.__executor_schedule)):
+            if worker_idx == len(self.__executor_schedule) - 1:
+                self.__executor_schedule[worker_idx].append(ScheduleItem(None, 0, min_time, True))
+            elif self.__executor_schedule[worker_idx][-1].duration + self.__executor_schedule[worker_idx][
+                -1].start < min_time:
+                residual_duration = min_time - \
+                                    self.__executor_schedule[worker_idx][-1].durationself.__executor_schedule[
+                                        worker_idx].append(
+                                        ScheduleItem(None, self.__executor_schedule[worker_idx][-1].duration,
+                                                     residual_duration, True))
+
+        if worker_idx != len(self.__executor_schedule) - 1:
+            self.__executor_schedule[-1].append(ScheduleItem(None, 0, min_time, True))
+        elif self.__executor_schedule[-1][-1].duration + self.__executor_schedule[-1][-1].start < min_time:
+            residual_duration = min_time - self.__executor_schedule[-1][-1].duration
+            self.__executor_schedule[-1].append(
+                ScheduleItem(None, self.__executor_schedule[-1][-1].duration, residual_duration, True))
     @staticmethod
     def __validate_params(tasks: list[Task]) -> None:
         """Проводит валидацию входящих параметров для инициализации объекта
