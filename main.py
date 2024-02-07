@@ -44,6 +44,18 @@ def main():
     # Инициализируем экземпляр класса Schedule
     # при этом будет рассчитано расписание для каждого исполнителя
     schedule = Schedule(tasks, 5)
+    task_a = Task('a', 3)
+    task_b = Task('b', 4)
+    task_c = Task('c', 6)
+    task_d = Task('d', 7)
+    task_e = Task('e', 7)
+    task_f = Task('f', 9)
+    task_g = Task('g', 10)
+    task_h = Task('h', 12)
+    task_i = Task('i', 17)
+    tasks = [task_a, task_b, task_c, task_d, task_e, task_f, task_g,
+             task_h, task_i]
+    schedule = Schedule(tasks, 5)
 
     # Выведем в консоль полученное расписание
     print(schedule)

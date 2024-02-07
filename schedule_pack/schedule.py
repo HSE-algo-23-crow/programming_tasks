@@ -94,14 +94,46 @@ class Schedule:
 
     def __calculate_duration(self) -> float:
         """Вычисляет и возвращает минимальную продолжительность расписания"""
-        pass
+        average = sum(map(lambda task: task.duration, self.tasks)) // len(self.__executor_schedule)
+        max_duration = int(max(map(lambda task: task.duration, self.tasks)))
+        return max(average, max_duration)
 
     def __fill_schedule_for_each_executor(self) -> None:
         """Процедура составляет расписание из элементов ScheduleItem для каждого
         исполнителя, на основе исходного списка задач и общей продолжительности
         расписания."""
-        pass
-
+        duration = self.__duration
+        executor_count = self.executor_count
+        tasks = self.__tasks[:]
+        task_count = len(self.__tasks)
+        executors = self.__executor_schedule
+        for executor_index in range(0, executor_count):
+            remaining_duration = duration
+            if len(executors[executor_index]) != 0:
+                remaining_duration -= executors[executor_index][0].duration
+            task_index = 0
+            while remaining_duration > 0:
+                if task_count > task_index:
+                    current_task = tasks[task_index]
+                    if current_task.duration <= remaining_duration:
+                        schedule_item = ScheduleItem(current_task, int(duration-remaining_duration), int(current_task.duration))
+                        executors[executor_index].append(schedule_item)
+                        remaining_duration -= current_task.duration
+                        tasks.pop(task_index)
+                        task_count -= 1
+                    else:
+                        schedule_item = ScheduleItem(current_task, int(duration - remaining_duration), remaining_duration)
+                        executors[executor_index].append(schedule_item)
+                        schedule_item = ScheduleItem(current_task, 0, int(current_task.duration-remaining_duration))
+                        executors[executor_index+1].append(schedule_item)
+                        tasks.pop(task_index)
+                        remaining_duration = 0
+                        task_index += 1
+                        task_count -= 1
+                else:
+                    schedule_item = ScheduleItem(None, int(duration-remaining_duration), int(remaining_duration), True)
+                    executors[executor_index].append(schedule_item)
+                    remaining_duration = 0
     @staticmethod
     def __validate_params(tasks: list[Task]) -> None:
         """Проводит валидацию входящих параметров для инициализации объекта
