@@ -94,13 +94,48 @@ class Schedule:
 
     def __calculate_duration(self) -> float:
         """Вычисляет и возвращает минимальную продолжительность расписания"""
-        pass
+        sum_duration = sum(task.duration for task in self.tasks)
+        avg_duration = sum_duration // self.executor_count
+        max_task_duration = max(task.duration for task in self.tasks)
+        return max(avg_duration, max_task_duration)
 
     def __fill_schedule_for_each_executor(self) -> None:
         """Процедура составляет расписание из элементов ScheduleItem для каждого
         исполнителя, на основе исходного списка задач и общей продолжительности
         расписания."""
-        pass
+        sc_duration = self.duration
+        cur_duration = 0
+        executor_idx = 0
+        executors = self.__executor_schedule
+
+        for task in self.tasks:
+            if cur_duration == sc_duration:
+                cur_duration = 0
+                if executor_idx < self.executor_count - 1:
+                    executor_idx += 1
+            if cur_duration + task.duration > sc_duration:
+                first_part=sc_duration-cur_duration
+                executors[executor_idx].append(ScheduleItem(task,cur_duration, first_part, False))
+                second_part = task.duration-first_part
+                executor_idx += 1
+                cur_duration=0
+                executors[executor_idx].append(ScheduleItem(task,cur_duration, second_part, False))
+                cur_duration = second_part
+            else:
+                executors[executor_idx].append(ScheduleItem(task, cur_duration, task.duration, False))
+                cur_duration += task.duration
+        if sc_duration-cur_duration >0:
+            executors[executor_idx].append(ScheduleItem(None, cur_duration, sc_duration-cur_duration, True))
+
+        while executor_idx<self.executor_count-1:
+            cur_duration = 0
+            executor_idx += 1
+            executors[executor_idx].append(ScheduleItem(None, cur_duration, sc_duration, True))
+
+
+
+
+
 
     @staticmethod
     def __validate_params(tasks: list[Task]) -> None:
