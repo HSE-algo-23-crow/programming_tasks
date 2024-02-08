@@ -94,14 +94,57 @@ class Schedule:
 
     def __calculate_duration(self) -> float:
         """Вычисляет и возвращает минимальную продолжительность расписания"""
-        pass
+        # Вычисляем Tmax - максимальную продолжительность среди всех заданий
+        Tmax = max(task.duration for task in self.__tasks)
+
+        # Вычисляем сумму продолжительностей всех задач
+        total_duration = sum(task.duration for task in self.__tasks)
+
+        # Вычисляем Tavg - среднюю продолжительность задач для одного исполнителя
+        Tavg = total_duration / len(self.__executor_schedule)
+
+        # Возвращаем максимальное значение из Tmax и Tavg
+        return max(Tmax, Tavg)
 
     def __fill_schedule_for_each_executor(self) -> None:
-        """Процедура составляет расписание из элементов ScheduleItem для каждого
-        исполнителя, на основе исходного списка задач и общей продолжительности
-        расписания."""
-        pass
+        schedule_duration = self.__duration
+        # Очередь задач с оставшимся временем
+        task_queue = [(task, task.duration) for task in self.__tasks]
+        # Отслеживаем использованное время для каждого исполнителя
+        executor_time_used = [0] * len(self.__executor_schedule)
 
+        # Проходим по каждому исполнителю и пытаемся назначить задачи
+        for executor_index in range(len(self.__executor_schedule)):
+            while task_queue and executor_time_used[executor_index] < schedule_duration:
+                task, remaining_duration = task_queue[0]  # Смотрим первую задачу в очереди
+
+                # Вычисляем доступное время для текущего исполнителя
+                available_time = schedule_duration - executor_time_used[executor_index]
+
+                # Определяем, сколько времени займет задача (полностью или частично)
+                time_to_assign = min(remaining_duration, available_time)
+
+                # Создаем ScheduleItem для задачи или ее части
+                self.__executor_schedule[executor_index].append(
+                    ScheduleItem(task, executor_time_used[executor_index], time_to_assign,
+                                 is_downtime=False if task else True))
+
+                # Обновляем использованное время исполнителя и оставшееся время задачи
+                executor_time_used[executor_index] += time_to_assign
+                remaining_duration -= time_to_assign
+
+                # Если задача полностью выполнена, убираем ее из очереди
+                if remaining_duration <= 0:
+                    task_queue.pop(0)
+                else:
+                    # Иначе обновляем оставшееся время задачи в очереди для следующего исполнителя
+                    task_queue[0] = (task, remaining_duration)
+
+        # Добавляем время простоя, если необходимо
+        for i, executor_schedule in enumerate(self.__executor_schedule):
+            if executor_time_used[i] < schedule_duration:
+                downtime = schedule_duration - executor_time_used[i]
+                executor_schedule.append(ScheduleItem(None, executor_time_used[i], downtime, is_downtime=True))
     @staticmethod
     def __validate_params(tasks: list[Task]) -> None:
         """Проводит валидацию входящих параметров для инициализации объекта
