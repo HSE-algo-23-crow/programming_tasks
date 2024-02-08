@@ -180,3 +180,4 @@ if __name__ == '__main__':
         print(f'\nРасписание для исполнителя # {i + 1}:')
         for schedule_item in schedule.get_schedule_for_executor(i):
             print(schedule_item)
+
