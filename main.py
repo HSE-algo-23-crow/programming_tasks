@@ -115,7 +115,7 @@ def main():
     profit_matrix = [[1, 2, 2],
                   [3, 5, 4],
                   [7, 6, 5]]
-    print(get_invest_distributions(profit_matrix))
+    print(get_invest_distribution(profit_matrix))
 
 
 if __name__ == '__main__':
