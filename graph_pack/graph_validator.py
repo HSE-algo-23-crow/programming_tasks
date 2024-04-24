@@ -26,7 +26,7 @@ class GraphValidator:
     @staticmethod
     def is_inverted_trees(graph: nx.Graph) -> bool:
         if GraphValidator.graph_has_loop(graph):
-            raise ValueError(ERR_GRAPH_IS_NOT_INV_TREE)
+            return False
         """Проверяет является ли граф обратно ориентированным деревом или
         лесом из обратно ориентированных деревьев."""
         adj = {node: set() for node in graph.nodes()}
@@ -46,9 +46,9 @@ class GraphValidator:
         for u, v in graph.edges:
             inverted_adj[v].add(u)
         for tree in trees:
-            flag = len(tree) > 1
+            flag = len(tree) > 2
             for node in tree:
-                visited = {node: False for node in graph.nodes()}
+                visited = {node: False for node in tree}
                 GraphValidator.dfs_util(inverted_adj, node, visited)
                 if all(visited.values()):
                     flag = False
@@ -74,6 +74,8 @@ class GraphValidator:
 
     @staticmethod
     def get_tree_count(graph: nx.Graph) -> int:
+        if GraphValidator.graph_has_loop(graph):
+            raise ValueError(ERR_GRAPH_IS_NOT_INV_TREE)
         """Возвращает количество деревьев в графе."""
         count = 0
         for node in graph:
