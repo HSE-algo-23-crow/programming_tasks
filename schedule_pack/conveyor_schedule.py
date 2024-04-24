@@ -53,15 +53,43 @@ class ConveyorSchedule(AbstractSchedule):
         return self._executor_schedule[0][-1].end
 
     def __fill_schedule(self, tasks: list[StagedTask]) -> None:
-        """Процедура составляет расписание из элементов ScheduleItem для каждого
-        исполнителя, согласно алгоритму Джонсона."""
-        pass
+        self._executor_schedule[1].append(ScheduleItem(task=tasks[0], start=0, duration=tasks[0].stage_durations[0]))
+        self._executor_schedule[0].append(ScheduleItem(task=None ,start=0, duration=tasks[0].stage_durations[0],
+                                                       is_downtime=True))
+        self._executor_schedule[0].append(ScheduleItem(start=self._executor_schedule[1][0].end,
+                    duration=tasks[0].stage_durations[1], task=tasks[0]))
+        for i in tasks[1:]:
+            self._executor_schedule[1].append(ScheduleItem(start=self._executor_schedule[1][-1].end,
+                                                           duration=i.stage_durations[0], task=i))
+            start = max(self._executor_schedule[1][-1].end, self._executor_schedule[0][-1].end)
+            self._executor_schedule[0].append(ScheduleItem(start=start, duration=i.stage_durations[1], task=i))
+        self._executor_schedule[0].append(ScheduleItem(task=None, start = self._executor_schedule[1][-1].end,
+                                                       duration= self._executor_schedule[0][-1].end-
+                                                                 self._executor_schedule[1][-1].end,
+                                                       is_downtime=True))
 
     @staticmethod
     def __sort_tasks(tasks: list[StagedTask]) -> list[StagedTask]:
-        """Возвращает отсортированный список задач для применения
-        алгоритма Джонсона."""
-        pass
+        part1 = []
+        part2 = []
+        for i in tasks:
+            if i.stage_durations[0] < i.stage_durations[1]:
+                flag = True
+                for j in range(len(part1)):
+                    if (part1[j].stage_durations[0] > i.stage_durations[0]):
+                        part1.insert(j, i)
+                        flag = False
+                        break
+                if flag: part1.append(i)
+            else:
+                flag = True
+                for j in range(len(part2)):
+                    if (part2[j].stage_durations[1] < i.stage_durations[1]):
+                        part2.insert(j, i)
+                        flag = False
+                        break
+                if flag: part2.append(i)
+        return part1 + part2
 
     @staticmethod
     def __validate_params(tasks: list[StagedTask]) -> None:
@@ -84,13 +112,11 @@ if __name__ == '__main__':
 
     # Инициализируем входные данные для составления расписания
     tasks = [
-        StagedTask('a', [7, 2]),
-        StagedTask('b', [3, 4]),
-        StagedTask('c', [2, 5]),
-        StagedTask('d', [4, 1]),
-        StagedTask('e', [6, 6]),
-        StagedTask('f', [5, 3]),
-        StagedTask('g', [4, 5])
+        StagedTask('a', [4, 3]),
+        StagedTask('b', [5, 2]),
+        StagedTask('c', [3, 5]),
+        StagedTask('d', [2, 3]),
+        StagedTask('e', [4, 4])
     ]
 
     # Инициализируем экземпляр класса Schedule
