@@ -25,9 +25,52 @@ class GraphValidator:
 
     @staticmethod
     def is_inverted_trees(graph: nx.Graph) -> bool:
+        if GraphValidator.graph_has_loop(graph):
+            raise ValueError(ERR_GRAPH_IS_NOT_INV_TREE)
         """Проверяет является ли граф обратно ориентированным деревом или
         лесом из обратно ориентированных деревьев."""
-        pass
+        adj = {node: set() for node in graph.nodes()}
+        for u, v in graph.edges:
+            adj[u].add(v)
+            adj[v].add(u)
+        visited = {node: False for node in graph.nodes()}
+        trees = []
+        for node in graph.nodes:
+            if not visited[node]:
+                visited[node] = True
+                tree = []
+                GraphValidator.get_trees_dfs(node, adj, visited, tree)
+                trees.append(tree)
+
+        inverted_adj = {node: set() for node in graph.nodes()}
+        for u, v in graph.edges:
+            inverted_adj[v].add(u)
+        for tree in trees:
+            flag = len(tree) > 1
+            for node in tree:
+                visited = {node: False for node in graph.nodes()}
+                GraphValidator.dfs_util(inverted_adj, node, visited)
+                if all(visited.values()):
+                    flag = False
+                    break
+            if flag:
+                return False
+        return True
+
+    @staticmethod
+    def dfs_util(adj, node, visited):
+        visited[node] = True
+        for path in adj[node]:
+            if not visited[path]:
+                GraphValidator.dfs_util(adj, path, visited)
+
+    @staticmethod
+    def get_trees_dfs(node: str, adj: dict[str, set[str]], visited: dict[str, bool], tree: list[str]):
+        visited[node] = True
+        tree.append(node)
+        for path in adj[node]:
+            if not visited[path]:
+                GraphValidator.get_trees_dfs(path, adj, visited, tree)
 
     @staticmethod
     def get_tree_count(graph: nx.Graph) -> int:
