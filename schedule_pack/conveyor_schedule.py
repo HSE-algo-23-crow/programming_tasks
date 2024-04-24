@@ -54,18 +54,18 @@ class ConveyorSchedule(AbstractSchedule):
 
     def __fill_schedule(self, tasks: list[StagedTask]) -> None:
         self._executor_schedule[1].append(ScheduleItem(task=tasks[0], start=0, duration=tasks[0].stage_durations[0]))
-        self._executor_schedule[0].append(ScheduleItem(task=None ,start=0, duration=tasks[0].stage_durations[0],
+        self._executor_schedule[0].append(ScheduleItem(task=None, start=0, duration=tasks[0].stage_durations[0],
                                                        is_downtime=True))
         self._executor_schedule[0].append(ScheduleItem(start=self._executor_schedule[1][0].end,
-                    duration=tasks[0].stage_durations[1], task=tasks[0]))
+                                                       duration=tasks[0].stage_durations[1], task=tasks[0]))
         for i in tasks[1:]:
             self._executor_schedule[1].append(ScheduleItem(start=self._executor_schedule[1][-1].end,
                                                            duration=i.stage_durations[0], task=i))
             start = max(self._executor_schedule[1][-1].end, self._executor_schedule[0][-1].end)
             self._executor_schedule[0].append(ScheduleItem(start=start, duration=i.stage_durations[1], task=i))
-        self._executor_schedule[0].append(ScheduleItem(task=None, start = self._executor_schedule[1][-1].end,
-                                                       duration= self._executor_schedule[0][-1].end-
-                                                                 self._executor_schedule[1][-1].end,
+        self._executor_schedule[0].append(ScheduleItem(task=None, start=self._executor_schedule[1][-1].end,
+                                                       duration=self._executor_schedule[0][-1].end -
+                                                                self._executor_schedule[1][-1].end,
                                                        is_downtime=True))
 
     @staticmethod
@@ -74,21 +74,11 @@ class ConveyorSchedule(AbstractSchedule):
         part2 = []
         for i in tasks:
             if i.stage_durations[0] < i.stage_durations[1]:
-                flag = True
-                for j in range(len(part1)):
-                    if (part1[j].stage_durations[0] > i.stage_durations[0]):
-                        part1.insert(j, i)
-                        flag = False
-                        break
-                if flag: part1.append(i)
+                part1.append(i)
             else:
-                flag = True
-                for j in range(len(part2)):
-                    if (part2[j].stage_durations[1] < i.stage_durations[1]):
-                        part2.insert(j, i)
-                        flag = False
-                        break
-                if flag: part2.append(i)
+                part2.append(i)
+        part1.sort(key=lambda x: x.stage_durations[0])
+        part2.sort(key=lambda x: x.stage_durations[1], reverse=True)
         return part1 + part2
 
     @staticmethod
@@ -112,11 +102,8 @@ if __name__ == '__main__':
 
     # Инициализируем входные данные для составления расписания
     tasks = [
-        StagedTask('a', [4, 3]),
-        StagedTask('b', [5, 2]),
-        StagedTask('c', [3, 5]),
-        StagedTask('d', [2, 3]),
-        StagedTask('e', [4, 4])
+        StagedTask('a', [2, 1]),
+        StagedTask('b', [1, 2])
     ]
 
     # Инициализируем экземпляр класса Schedule
@@ -124,6 +111,7 @@ if __name__ == '__main__':
     schedule = ConveyorSchedule(tasks)
 
     # Выведем в консоль полученное расписание
+
     print(schedule)
     for i in range(schedule.executor_count):
         print(f'\nРасписание для исполнителя # {i + 1}:')
