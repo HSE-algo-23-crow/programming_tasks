@@ -32,7 +32,15 @@ class GraphValidator:
     @staticmethod
     def get_tree_count(graph: nx.Graph) -> int:
         """Возвращает количество деревьев в графе."""
-        pass
+        count = 0
+        for node in graph:
+            is_root = True
+            for edge in graph.edges:
+                if node == edge[0]:
+                    is_root = False
+            if is_root:
+                count += 1
+        return max(count, 1)
 
     @staticmethod
     def graph_has_loop(graph: nx.Graph) -> bool:
