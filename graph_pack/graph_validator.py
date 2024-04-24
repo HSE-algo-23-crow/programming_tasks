@@ -1,8 +1,6 @@
 import networkx as nx
 
-
 from graph_pack.constants import ERR_GRAPH_IS_NOT_INV_TREE
-
 
 UNDISCOVERED = 1
 DISCOVERED = 2
@@ -24,6 +22,7 @@ class GraphValidator:
     graph_has_loop(graph: nx.Graph) -> bool:
         Проверяет наличие цикла в графе.
     """
+
     @staticmethod
     def is_inverted_trees(graph: nx.Graph) -> bool:
         """Проверяет является ли граф обратно ориентированным деревом или
@@ -37,8 +36,31 @@ class GraphValidator:
 
     @staticmethod
     def graph_has_loop(graph: nx.Graph) -> bool:
-        """Проверяет наличие цикла в графе."""
-        pass
+        adj = GraphValidator.convert_graph_to_adjacency_list(graph)
+        for node in adj.keys():
+            states = {node: UNDISCOVERED for node in adj.keys()}
+            has_loop = GraphValidator.dfs(node, adj, states)
+            if has_loop:
+                return True
+        return False
+
+    @staticmethod
+    def dfs(edge: str, adj: dict[str, set[str]], states: dict[str, int]) -> bool:
+        if states[edge] == DISCOVERED:
+            return True
+        states[edge] = DISCOVERED
+        has_loop = False
+        for path in adj[edge]:
+            has_loop = has_loop or GraphValidator.dfs(path, adj, states)
+        states[edge] = PROCESSED
+        return has_loop
+
+    @staticmethod
+    def convert_graph_to_adjacency_list(graph: nx.Graph) -> dict[str, set[str]]:
+        adj = {node: set() for node in graph.nodes()}
+        for u, v in graph.edges:
+            adj[u].add(v)
+        return adj
 
 
 if __name__ == '__main__':
