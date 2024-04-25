@@ -61,12 +61,20 @@ class ConveyorSchedule(AbstractSchedule):
         for i in tasks[1:]:
             self._executor_schedule[1].append(ScheduleItem(start=self._executor_schedule[1][-1].end,
                                                            duration=i.stage_durations[0], task=i))
-            start = max(self._executor_schedule[1][-1].end, self._executor_schedule[0][-1].end)
+            first = self._executor_schedule[1][-1].end
+            second = self._executor_schedule[0][-1].end
+            if first > second:
+                start = first
+                self._executor_schedule[0].append(ScheduleItem(task=None, start=second, duration=first-second,
+                                                               is_downtime=True))
+            else:
+                start = second
             self._executor_schedule[0].append(ScheduleItem(start=start, duration=i.stage_durations[1], task=i))
-        self._executor_schedule[0].append(ScheduleItem(task=None, start=self._executor_schedule[1][-1].end,
+        self._executor_schedule[1].append(ScheduleItem(task=None, start=self._executor_schedule[1][-1].end,
                                                        duration=self._executor_schedule[0][-1].end -
                                                                 self._executor_schedule[1][-1].end,
                                                        is_downtime=True))
+        self._executor_schedule[0], self._executor_schedule[1] = self._executor_schedule[1], self._executor_schedule[0]
 
     @staticmethod
     def __sort_tasks(tasks: list[StagedTask]) -> list[StagedTask]:
@@ -102,8 +110,11 @@ if __name__ == '__main__':
 
     # Инициализируем входные данные для составления расписания
     tasks = [
-        StagedTask('a', [2, 1]),
-        StagedTask('b', [1, 2])
+        StagedTask('a', [4, 3]),
+        StagedTask('b', [5, 2]),
+        StagedTask('c', [3, 5]),
+        StagedTask('d', [2, 3]),
+        StagedTask('e', [4, 4])
     ]
 
     # Инициализируем экземпляр класса Schedule
