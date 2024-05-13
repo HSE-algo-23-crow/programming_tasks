@@ -80,13 +80,12 @@ class ConveyorSchedule(AbstractSchedule):
 
             if last_executor_schedule_1_end > last_executor_schedule_0_end:
                 start = last_executor_schedule_1_end
-                duration = last_executor_schedule_1_end - last_executor_schedule_0_end
+                schedule_item = ScheduleItem(task=None, start=last_executor_schedule_0_end,
+                                             duration=last_executor_schedule_1_end - last_executor_schedule_0_end,
+                                             is_downtime=True)
+                self._executor_schedule[0].append(schedule_item)
             else:
                 start = last_executor_schedule_0_end
-                duration = last_executor_schedule_0_end - last_executor_schedule_1_end
-
-            schedule_item_0 = ScheduleItem(task=None, start=start, duration=duration, is_downtime=True)
-            self._executor_schedule[0].append(schedule_item_0)
 
             schedule_item_2 = ScheduleItem(start=start, duration=task.stage_durations[1], task=task)
             self._executor_schedule[0].append(schedule_item_2)
@@ -105,13 +104,11 @@ class ConveyorSchedule(AbstractSchedule):
         stage1_tasks: list[StagedTask] = []
         stage2_tasks: list[StagedTask] = []
 
-        [stage1_tasks.append(task) if task.stage_duration(0) <= task.stage_duration(1) else stage2_tasks.append(task) for task in tasks]
+        [stage1_tasks.append(task) if task.stage_duration(0) <= task.stage_duration(1) else stage2_tasks.append(task)
+         for task in tasks]
 
         stage1_tasks.sort(key=lambda task: task.stage_duration(0))
         stage2_tasks.sort(key=lambda task: task.stage_duration(1), reverse=True)
-        print([stage.name for stage in stage1_tasks],[stage.name for stage in stage2_tasks])
-
-
 
         return stage1_tasks + stage2_tasks
 
