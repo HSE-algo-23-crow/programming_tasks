@@ -150,4 +150,4 @@ if __name__ == '__main__':
     print('\nМатрица смежности для графа:')
     print(matrix)
     print('Граф содержит петли:',
-          GraphValidator.graph_has_loop(graph_with_loop)
+          GraphValidator.graph_has_loop(graph_with_loop))
