@@ -1,5 +1,5 @@
 import random
-from typing import Callable, TypeVar
+from typing import Callable, TypeVar, List, Tuple, Union
 
 STAGE = 0
 WIN = 1
@@ -7,7 +7,7 @@ LOOS = 2
 T = TypeVar('T')
 
 
-def tournament(sample: list[T] | tuple[T], get_winner: Callable[[T, T], T]):
+def tournament(sample: Union[List[T], Tuple[T]], get_winner: Callable[[T, T], T]) -> T:
     """Выполняет турнирный отбор из заданной выборки. Проводит серию турниров
     между парами объектов из выборки. Победители каждого турнира переходят на
     следующий этап, пока не останется один победитель.
@@ -21,7 +21,30 @@ def tournament(sample: list[T] | tuple[T], get_winner: Callable[[T, T], T]):
     значение.
     :return: Объект победитель турнира.
     """
-    pass
+    if not isinstance(sample, (list, tuple)):
+        raise TypeError('Sample for a tournament is not a list or a tuple') # Проверка на список
+
+    if not callable(get_winner):
+        raise TypeError('get_winner is not a function')
+
+    if len(sample) < 2:
+        raise ValueError('Sample for the tournament consists of less than two objects') # Проверка на длинну
+
+    while len(sample) > 1:
+        next_round = []
+        i = 0
+        while i < len(sample):
+            if i + 1 < len(sample):
+                winner = get_winner(sample[i], sample[i + 1])
+                if winner not in (sample[i], sample[i + 1]):
+                    raise RuntimeError('get_winner function returned an invalid value')
+                next_round.append(winner)
+            else:
+                next_round.append(sample[i])
+            i += 2
+        sample = next_round
+
+    return sample[0]
 
 
 if __name__ == '__main__':
