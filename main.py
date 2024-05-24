@@ -3,6 +3,7 @@ ITEMS = 'items'
 WEIGHTS = 'Веса'
 COSTS = 'Стоимости'
 ERR_LENGTHS_NOT_EQUAL = 'Списки весов и стоимости разной длины'
+ERR_TOO_MANY_ITEMS = 'Слишком большое количество предметов'
 ERR_NOT_INT_WEIGHT_LIMIT = ('Ограничение вместимости рюкзака не является целым '
                             'числом')
 ERR_NOT_POS_WEIGHT_LIMIT = 'Ограничение вместимости рюкзака меньше единицы'
@@ -74,6 +75,11 @@ def validate_knapsack_data(weights: list[int], costs: list[int], weight_limit: i
 
     if len(weights) != len(costs):
         raise ValueError(ERR_LENGTHS_NOT_EQUAL)
+
+    if len(weights) > 16:
+        # Добавлено именно такое ограничение, поскольку при n > 16, количество операций будет больше ста тысяч
+        # и время выполнения алгоритма серьезно ухудшается и он выполняется достаточно долго
+        raise ValueError(ERR_TOO_MANY_ITEMS)
 
 def validate_weight_limit(weights: list[int], weight_limit: int):
     if type(weight_limit) is not int:
