@@ -29,7 +29,40 @@ def get_knapsack(weights: list[int], costs: list[int], weight_limit: int) -> \
     рюкзаке, items - список с индексами предметов, обеспечивающих максимальную
     стоимость.
     """
-    pass
+    validate_knapsack_data(weights, costs, weight_limit)
+
+def validate_knapsack_data(weights: list[int], costs: list[int], weight_limit: int):
+    validate_knapsack_list(weights, WEIGHTS)
+    validate_knapsack_list(costs, COSTS)
+    validate_weight_limit(weights, weight_limit)
+
+    if len(weights) != len(costs):
+        raise ValueError(ERR_LENGTHS_NOT_EQUAL)
+
+def validate_weight_limit(weights: list[int], weight_limit: int):
+    if type(weight_limit) is not int:
+        raise TypeError(ERR_NOT_INT_WEIGHT_LIMIT)
+    if weight_limit < 1:
+        raise ValueError(ERR_NOT_POS_WEIGHT_LIMIT)
+    if weight_limit < min(weights):
+        raise ValueError(ERR_LESS_WEIGHT_LIMIT)
+
+
+def validate_knapsack_list(data: list[int], name: str):
+    if not isinstance(data, list):
+        raise TypeError(ERR_NOT_LIST_TEMPL.format(name))
+    if len(data) == 0:
+        raise ValueError(ERR_EMPTY_LIST_TEMPL.format(name))
+    if any(not isinstance(elem, int) for elem in data):
+        raise TypeError(ERR_NOT_INT_TEMPL.format(name))
+    if any(elem <= 0 for elem in data):
+        raise ValueError(ERR_NOT_POS_TEMPL.format(name))
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
