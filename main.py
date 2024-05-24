@@ -30,6 +30,42 @@ def get_knapsack(weights: list[int], costs: list[int], weight_limit: int) -> \
     стоимость.
     """
     validate_knapsack_data(weights, costs, weight_limit)
+    n = len(weights)
+
+    max_mask = ''
+    max_cost = 0
+
+    for i in range(0, 2 ** n):
+        mask = bin(i)[2:]
+        mask = '0' * (n - len(mask)) + mask
+        if sum(weights[i] if value == '1' else 0 for i, value in enumerate(mask)) > weight_limit:
+            continue
+
+        cost = get_knapsack_cost(mask, weights, costs)
+        if cost > max_cost:
+            max_cost = cost
+            max_mask = mask
+
+    result = []
+    for i, value in enumerate(max_mask):
+        if value != '0':
+            result.append(i)
+
+    return {
+        COST: max_cost,
+        ITEMS: result
+    }
+
+
+def get_knapsack_cost(mask: str, weights: list[int], costs: list[int]):
+    weight = 0
+    cost = 0
+    for i, value in enumerate(mask):
+        if value == '0':
+            continue
+        cost += costs[i]
+        weight += weights[i]
+    return cost
 
 def validate_knapsack_data(weights: list[int], costs: list[int], weight_limit: int):
     validate_knapsack_list(weights, WEIGHTS)
