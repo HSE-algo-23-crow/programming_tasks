@@ -1,3 +1,5 @@
+import itertools
+
 COST = 'cost'
 ITEMS = 'items'
 WEIGHTS = 'Веса'
@@ -29,7 +31,45 @@ def get_knapsack(weights: list[int], costs: list[int], weight_limit: int) -> \
     рюкзаке, items - список с индексами предметов, обеспечивающих максимальную
     стоимость.
     """
-    pass
+    if not isinstance(weights, list):
+        raise TypeError(ERR_NOT_LIST_TEMPL.format(WEIGHTS))
+    if not isinstance(costs, list):
+        raise TypeError(ERR_NOT_LIST_TEMPL.format(COSTS))
+    if not isinstance(weight_limit, int):
+        raise TypeError(ERR_NOT_INT_WEIGHT_LIMIT)
+    if weight_limit < 1:
+        raise ValueError(ERR_NOT_POS_WEIGHT_LIMIT)
+    if not weights:
+        raise ValueError(ERR_EMPTY_LIST_TEMPL.format(WEIGHTS))
+    if not costs:
+        raise ValueError(ERR_EMPTY_LIST_TEMPL.format(COSTS))
+    if len(weights) != len(costs):
+        raise ValueError(ERR_LENGTHS_NOT_EQUAL)
+    if any(not isinstance(w, int) for w in weights):
+        raise TypeError(ERR_NOT_INT_TEMPL.format(WEIGHTS))
+    if any(not isinstance(c, int) for c in costs):
+        raise TypeError(ERR_NOT_INT_TEMPL.format(COSTS))
+    if any(w <= 0 for w in weights):
+        raise ValueError(ERR_NOT_POS_TEMPL.format(WEIGHTS))
+    if any(c <= 0 for c in costs):
+        raise ValueError(ERR_NOT_POS_TEMPL.format(COSTS))
+    if weight_limit < min(weights):
+        raise ValueError(ERR_LESS_WEIGHT_LIMIT)
+
+    n = len(weights)
+    best_cost = 0
+    best_items = []
+
+    for r in range(1, n + 1):
+        for subset in itertools.combinations(range(n), r):
+            subset_weight = sum(weights[i] for i in subset)
+            subset_cost = sum(costs[i] for i in subset)
+            if subset_weight <= weight_limit and subset_cost > best_cost:
+                best_cost = subset_cost
+                best_items = list(subset)
+
+    return {COST: best_cost, ITEMS: best_items}
+
 
 
 if __name__ == '__main__':
