@@ -31,43 +31,72 @@ def get_knapsack(weights: list[int], costs: list[int], weight_limit: int) -> \
     рюкзаке, items - список с индексами предметов, обеспечивающих максимальную
     стоимость.
     """
+    # Проверка, что веса являются списком
     if not isinstance(weights, list):
         raise TypeError(ERR_NOT_LIST_TEMPL.format(WEIGHTS))
+
+    # Проверка, что стоимости являются списком
     if not isinstance(costs, list):
         raise TypeError(ERR_NOT_LIST_TEMPL.format(COSTS))
+
+    # Проверка, что ограничение веса является целым числом
     if not isinstance(weight_limit, int):
         raise TypeError(ERR_NOT_INT_WEIGHT_LIMIT)
+
+    # Проверка, что ограничение веса больше 0
     if weight_limit < 1:
         raise ValueError(ERR_NOT_POS_WEIGHT_LIMIT)
+
+    # Проверка, что список весов не пустой
     if not weights:
         raise ValueError(ERR_EMPTY_LIST_TEMPL.format(WEIGHTS))
+
+    # Проверка, что список стоимостей не пустой
     if not costs:
         raise ValueError(ERR_EMPTY_LIST_TEMPL.format(COSTS))
+
+    # Проверка, что списки весов и стоимостей одинаковой длины
     if len(weights) != len(costs):
         raise ValueError(ERR_LENGTHS_NOT_EQUAL)
+
+    # Проверка, что все элементы списка весов являются целыми числами
     if any(not isinstance(w, int) for w in weights):
         raise TypeError(ERR_NOT_INT_TEMPL.format(WEIGHTS))
+
+    # Проверка, что все элементы списка стоимостей являются целыми числами
     if any(not isinstance(c, int) for c in costs):
         raise TypeError(ERR_NOT_INT_TEMPL.format(COSTS))
+
+    # Проверка, что все веса больше 0
     if any(w <= 0 for w in weights):
         raise ValueError(ERR_NOT_POS_TEMPL.format(WEIGHTS))
+
+    # Проверка, что все стоимости больше 0
     if any(c <= 0 for c in costs):
         raise ValueError(ERR_NOT_POS_TEMPL.format(COSTS))
+
+    # Проверка, что ограничение веса больше минимального веса
     if weight_limit < min(weights):
         raise ValueError(ERR_LESS_WEIGHT_LIMIT)
 
+    # Общее количество предметов
     n = len(weights)
+    # Лучшая найденная стоимость
     best_cost = 0
+    # Лучший найденный набор предметов
     best_items = []
 
+    # Перебор всех возможных подмножеств предметов
     for r in range(1, n + 1):
         for subset in itertools.combinations(range(n), r):
             subset_weight = sum(weights[i] for i in subset)
             subset_cost = sum(costs[i] for i in subset)
+            # Проверка, что вес подмножества не превышает ограничение и стоимость подмножества больше текущей наилучшей
             if subset_weight <= weight_limit and subset_cost > best_cost:
                 best_cost = subset_cost
                 best_items = list(subset)
 
+    # Возврат результата в виде словаря
     return {COST: best_cost, ITEMS: best_items}
 
 
