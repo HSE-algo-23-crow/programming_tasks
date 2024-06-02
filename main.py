@@ -1,3 +1,6 @@
+import itertools
+
+
 COST = 'cost'
 ITEMS = 'items'
 WEIGHTS = 'Веса'
@@ -12,6 +15,39 @@ ERR_NOT_LIST_TEMPL = '{0} не являются списком'
 ERR_EMPTY_LIST_TEMPL = '{0} являются пустым списком'
 ERR_NOT_INT_TEMPL = '{0} содержат не числовое значение'
 ERR_NOT_POS_TEMPL = '{0} содержат нулевое или отрицательное значение'
+
+
+def limit_verify(weight_limit: int) -> None:
+    if not isinstance(weight_limit, int): raise TypeError(ERR_NOT_INT_WEIGHT_LIMIT)
+    if weight_limit <= 0: raise ValueError(ERR_NOT_POS_WEIGHT_LIMIT)
+
+
+def costs_verify(cs: list[int]) -> None:
+    if not isinstance(cs, list): raise TypeError(ERR_NOT_LIST_TEMPL.format(COSTS))
+    if not cs: raise ValueError(ERR_EMPTY_LIST_TEMPL.format(COSTS))
+    for c in cs:
+        if not isinstance(c, int): raise TypeError(ERR_NOT_INT_TEMPL.format(COSTS))
+        if c <= 0: raise ValueError(ERR_NOT_POS_TEMPL.format(COSTS))
+
+
+def weights_verify(ws: list[int]) -> None:
+    if not isinstance(ws, list): raise TypeError(ERR_NOT_LIST_TEMPL.format(WEIGHTS))
+    if not ws: raise ValueError(ERR_EMPTY_LIST_TEMPL.format(WEIGHTS))
+    for w in ws:
+        if not isinstance(w, int): raise TypeError(ERR_NOT_INT_TEMPL.format(WEIGHTS))
+        if w <= 0: raise ValueError(ERR_NOT_POS_TEMPL.format(WEIGHTS))
+
+
+def combined_verify(ws: list[int], cs: list[int], wl: int) -> None:
+    if len(ws) != len(cs): raise ValueError(ERR_LENGTHS_NOT_EQUAL)
+    if min(ws) > wl: raise ValueError(ERR_LESS_WEIGHT_LIMIT)
+
+
+def params_verify(ws: list[int], cs: list[int], wl: int) -> None:
+    limit_verify(wl)
+    costs_verify(cs)
+    weights_verify(ws)
+    combined_verify(ws, cs, wl)
 
 
 def get_knapsack(weights: list[int], costs: list[int], weight_limit: int) -> \
@@ -29,7 +65,25 @@ def get_knapsack(weights: list[int], costs: list[int], weight_limit: int) -> \
     рюкзаке, items - список с индексами предметов, обеспечивающих максимальную
     стоимость.
     """
-    pass
+
+    params_verify(weights, costs, weight_limit)
+
+    result_cost = 0
+    result_items = []
+    for number_of_items_in_combination in range(len(costs)):
+        for combination in itertools.combinations(range(len(costs)), number_of_items_in_combination+1):
+
+            current_cost = 0
+            current_weight = 0
+
+            for index in combination:
+                current_cost += costs[index]
+                current_weight += weights[index]
+
+            if current_cost > result_cost and current_weight <= weight_limit:
+                result_cost, result_items = current_cost, list(combination)
+
+    return {COST: result_cost, ITEMS: result_items}
 
 
 if __name__ == '__main__':
