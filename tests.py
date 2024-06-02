@@ -3,7 +3,7 @@ import unittest
 from main import get_knapsack, COST, ITEMS, ERR_LENGTHS_NOT_EQUAL, \
     ERR_NOT_INT_WEIGHT_LIMIT, ERR_NOT_POS_WEIGHT_LIMIT, ERR_LESS_WEIGHT_LIMIT, \
     ERR_NOT_LIST_TEMPL, ERR_EMPTY_LIST_TEMPL, ERR_NOT_INT_TEMPL, WEIGHTS, \
-    COSTS, ERR_NOT_POS_TEMPL
+    COSTS, ERR_NOT_POS_TEMPL, ERR_ENORMOUS_SIZE
 
 
 class TestKnapsack(unittest.TestCase):
@@ -63,6 +63,21 @@ class TestKnapsack(unittest.TestCase):
             get_knapsack([1], [], 1)
         self.assertEqual(ERR_EMPTY_LIST_TEMPL.format(COSTS),
                          str(error.exception))
+
+    def test_unconditional_number_of_items_weights(self):
+        """Проверяет не является ли количество предметов для перебора чрезмерным"""
+        with self.assertRaises(ValueError) as error:
+            get_knapsack([1 for i in range(51)], [1], 1)
+        self.assertEqual(ERR_ENORMOUS_SIZE.format(51),
+                         str(error.exception))
+
+    def test_unconditional_number_of_items_costs(self):
+        """Проверяет не является ли количество предметов для перебора чрезмерным"""
+        with self.assertRaises(ValueError) as error:
+            get_knapsack([1], [1 for i in range(51)], 1)
+        self.assertEqual(ERR_ENORMOUS_SIZE.format(51),
+                         str(error.exception))
+
 
     def test_not_int_in_weights(self):
         """Проверяет выброс исключения при передаче нечислового значения

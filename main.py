@@ -15,6 +15,7 @@ ERR_NOT_LIST_TEMPL = '{0} не являются списком'
 ERR_EMPTY_LIST_TEMPL = '{0} являются пустым списком'
 ERR_NOT_INT_TEMPL = '{0} содержат не числовое значение'
 ERR_NOT_POS_TEMPL = '{0} содержат нулевое или отрицательное значение'
+ERR_ENORMOUS_SIZE = 'Слишком большой размер списка ({0})'
 
 
 def limit_verify(weight_limit: int) -> None:
@@ -25,6 +26,7 @@ def limit_verify(weight_limit: int) -> None:
 def costs_verify(cs: list[int]) -> None:
     if not isinstance(cs, list): raise TypeError(ERR_NOT_LIST_TEMPL.format(COSTS))
     if not cs: raise ValueError(ERR_EMPTY_LIST_TEMPL.format(COSTS))
+    if len(cs) > 50: raise ValueError(ERR_ENORMOUS_SIZE.format(len(cs)))
     for c in cs:
         if not isinstance(c, int): raise TypeError(ERR_NOT_INT_TEMPL.format(COSTS))
         if c <= 0: raise ValueError(ERR_NOT_POS_TEMPL.format(COSTS))
@@ -33,6 +35,7 @@ def costs_verify(cs: list[int]) -> None:
 def weights_verify(ws: list[int]) -> None:
     if not isinstance(ws, list): raise TypeError(ERR_NOT_LIST_TEMPL.format(WEIGHTS))
     if not ws: raise ValueError(ERR_EMPTY_LIST_TEMPL.format(WEIGHTS))
+    if len(ws) > 50: raise ValueError(ERR_ENORMOUS_SIZE.format(len(ws)))
     for w in ws:
         if not isinstance(w, int): raise TypeError(ERR_NOT_INT_TEMPL.format(WEIGHTS))
         if w <= 0: raise ValueError(ERR_NOT_POS_TEMPL.format(WEIGHTS))
