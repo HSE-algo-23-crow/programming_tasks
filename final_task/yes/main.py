@@ -15,7 +15,7 @@ def main():
     ants = [Ant(paths) for i in range(N)]
     best_path = [[], float("inf")]
     for II in range(10):
-        ant_paths = [None for i in range(N)]
+        ant_paths = [None] * N
         for i in range(N):
             ants[i].set_position(paths.names[i])
             ant_paths[i] = [ants[i].get_path(),0]

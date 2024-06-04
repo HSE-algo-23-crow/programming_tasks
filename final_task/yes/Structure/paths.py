@@ -22,7 +22,7 @@ class Paths:
         self.length += 1
         for i in self.__names.values():
             self.__paths[i].append([None, 1])
-        self.__paths.append([[None, 1],] * self.length)
+        self.__paths.append([[None, 1] for k in range(self.length)])
         self.__names[name] = self.length-1
         self.names.append(name)
 
