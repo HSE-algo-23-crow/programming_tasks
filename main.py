@@ -1,6 +1,5 @@
 from itertools import permutations
 
-from permutations import generate_permutations
 NullableNumber = int | float | None
 
 INFINITY = float('inf')
@@ -10,8 +9,6 @@ PARAM_ERR_MSG = ('Таблица расстояний не является пр
                  'числовыми значениями')
 NEG_VALUE_ERR_MSG = 'Расстояние не может быть отрицательным'
 MAX_TOWNS = 10
-towns_visited = []
-min_path_length = float('inf')
 
 
 def get_salesman_path(dist_matrix: list[list[NullableNumber]]) -> \
@@ -42,7 +39,7 @@ def get_salesman_path(dist_matrix: list[list[NullableNumber]]) -> \
                 raise ValueError(NEG_VALUE_ERR_MSG)
 
     if size > MAX_TOWNS:
-        raise ValueError('Количество городов превышает допустимое значение')
+        raise ValueError(f'Количество городов превышает допустимое значение ({MAX_TOWNS})')
 
     # Обработка случая единичного порядка
     if size == 1:

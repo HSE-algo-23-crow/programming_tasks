@@ -150,6 +150,10 @@ class TestSalesManPath(unittest.TestCase):
 
         self.assertEqual(result[DISTANCE], distance)
         self.assertTrue(self.__check_path(matrix, result))
+    def test_alot_cities(self):
+        """Проверяет выброс исключения при превышении количества городов."""
+        matrix = [[0 if i == j else 1 for j in range(11)] for i in range(11)]
+        self.assertRaises(ValueError, get_salesman_path, matrix)
 
 
 if __name__ == '__main__':
