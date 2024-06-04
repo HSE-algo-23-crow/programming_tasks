@@ -22,7 +22,9 @@ class Ant:
     def get_path(self):
         while len(self.__visited) < self.__paths.length:
             self.__step()
+
         path = self.__visited
         self.__visited = []
         self.__position = None
+
         return path
