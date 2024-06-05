@@ -3,7 +3,7 @@ import unittest
 from main import get_knapsack, COST, ITEMS, ERR_LENGTHS_NOT_EQUAL, \
     ERR_NOT_INT_WEIGHT_LIMIT, ERR_NOT_POS_WEIGHT_LIMIT, ERR_LESS_WEIGHT_LIMIT, \
     ERR_NOT_LIST_TEMPL, ERR_EMPTY_LIST_TEMPL, ERR_NOT_INT_TEMPL, WEIGHTS, \
-    COSTS, ERR_NOT_POS_TEMPL
+    COSTS, ERR_NOT_POS_TEMPL, ERR_TIME_EXPIRED
 
 
 class TestKnapsack(unittest.TestCase):
@@ -206,6 +206,15 @@ class TestKnapsack(unittest.TestCase):
         self.assertEqual(result[COST], 39)
         self.assertTrue(TestKnapsack.__check_set(weights, costs, weight_limit,
                                                  result))
+
+    def test_time_limit(self):
+        """Проверка ограничения по времени работы программы"""
+        weights = [11, 4, 8, 6, 3, 11, 4, 8, 6, 3, 5, 5, 6, 3, 5, 5, 11, 4, 8, 6, 3, 5, 5, 7, 5]
+        costs = [17, 6, 11, 10, 5, 8, 6, 17, 6, 11, 10, 5, 8, 6, 17, 6, 11, 10, 5, 8, 6, 17, 6, 9, 4]
+        weight_limit = 45
+        with self.assertRaises(RuntimeError) as error:
+            get_knapsack(weights, costs, weight_limit)
+        self.assertEqual(ERR_TIME_EXPIRED, str(error.exception))
 
 
 if __name__ == '__main__':

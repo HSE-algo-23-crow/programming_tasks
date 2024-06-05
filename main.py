@@ -1,3 +1,5 @@
+import time
+
 COST = 'cost'
 ITEMS = 'items'
 WEIGHTS = 'Веса'
@@ -12,6 +14,7 @@ ERR_NOT_LIST_TEMPL = '{0} не являются списком'
 ERR_EMPTY_LIST_TEMPL = '{0} являются пустым списком'
 ERR_NOT_INT_TEMPL = '{0} содержат не числовое значение'
 ERR_NOT_POS_TEMPL = '{0} содержат нулевое или отрицательное значение'
+ERR_TIME_EXPIRED = 'Ограничение по времени работы программы (30 секунд) было превышено'
 
 
 def get_list_full_validation(obj_list, obj_name):
@@ -89,6 +92,7 @@ def get_knapsack(weights: list[int], costs: list[int], weight_limit: int) -> \
     стоимость.
     """
 
+    start_time = time.time()
     get_validate_params(weights, costs, weight_limit)
 
     max_cost = 0
@@ -101,6 +105,9 @@ def get_knapsack(weights: list[int], costs: list[int], weight_limit: int) -> \
             if case_cost > max_cost:
                 max_cost = case_cost
                 max_case = case
+
+        if time.time() - start_time > 30:
+            raise RuntimeError(ERR_TIME_EXPIRED)
 
     max_case_items = []
     for i in range(len(max_case)):
