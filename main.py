@@ -88,7 +88,7 @@ def decode(codes: list[int]) -> list[int]:
     return decoded_arr
 
 
-if name == 'main':
+if __name__ == '__main__':
     print('Пример натуральной и альтернативной кодировки решения задачи о '
           'рюкзаке\n')
     natural = [0, 4, 1, 3, 2]

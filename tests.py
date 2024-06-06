@@ -149,5 +149,5 @@ class TestDecode(unittest.TestCase):
                      0]
             self.assertEqual(natural, decode(alter))
 
-    if name == 'main':
+    if __name__ == '__main__':
         unittest.main()
