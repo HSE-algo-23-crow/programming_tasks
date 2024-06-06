@@ -1,4 +1,5 @@
 from itertools import permutations
+from permutations import generate_permutations
 
 NullableNumber = int | float | None
 
@@ -75,10 +76,10 @@ def get_salesman_path(dist_matrix: list[list[NullableNumber]]) -> \
 # Пример использования
 if __name__ == '__main__':
     print('Пример решения задачи коммивояжёра\n\nМатрица расстояний:')
-    matrix = [[0., 2., 3., 4.],
-              [5., 0., 7., 8.],
-              [9., 10., 0., 12.],
-              [13., 14., 15., 0.]]
+    matrix = [[1., 2., 3., 4.],
+                  [5., 6., 7., 8.],
+                  [9., 10., 11., 12.],
+                  [13., 14., 15., 16.]]
     for row in matrix:
         print(row)
 
