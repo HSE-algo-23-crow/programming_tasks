@@ -112,7 +112,7 @@ class TestDecode(unittest.TestCase):
         self.assertEqual(ERR_EMPTY_LIST_MSG, str(error.exception))
 
     def test_over_constraint(self):
-        """Проверяет выброс исключения при передаче пустого списка."""
+        """Проверяет выброс исключения при передаче значений превышающих ограничение n - i + 1."""
         with self.assertRaises(ValueError) as error:
             decode([1, 2])
         self.assertEqual(ERR_OVER_CONSTRAINT_TEMPL.format(2, 2), str(error.exception))

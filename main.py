@@ -11,26 +11,30 @@ def decode_validation(numbers: list[int]):
         raise TypeError(ERR_NOT_LIST_MSG)
     elif len(numbers) == 0:
         raise ValueError(ERR_EMPTY_LIST_MSG)
-    elif numbers[0] != 1:
-        raise ValueError(ERR_NOT_START_WITH_1_MSG)
     else:
         for item in numbers:
             if not isinstance(item, int):
-                raise TypeError(ERR_NOT_INT_TEMPL)
+                raise TypeError(ERR_NOT_INT_TEMPL.format(item))
+    if numbers[0] != 1:
+        raise ValueError(ERR_NOT_START_WITH_1_MSG)
+    for i in range(len(numbers)):
+        if numbers[i] >= len(numbers) - i + 1:
+            raise ValueError(ERR_OVER_CONSTRAINT_TEMPL.format(numbers[i], i + 1))
 
 def encode_validation(numbers: list[int]):
     if not isinstance(numbers, list):
         raise TypeError(ERR_NOT_LIST_MSG)
     elif len(numbers) == 0:
         raise ValueError(ERR_EMPTY_LIST_MSG)
-    elif numbers[0] != 1:
-        raise ValueError(ERR_NOT_START_WITH_1_MSG)
-    elif len(numbers) != len(set(numbers)):
-        raise ValueError(ERR_HAS_DUPLICATES_MSG)
     else:
         for item in numbers:
             if not isinstance(item, int):
-                raise TypeError(ERR_NOT_INT_TEMPL)
+                raise TypeError(ERR_NOT_INT_TEMPL.format(item))
+    if numbers[0] != 1:
+        raise ValueError(ERR_NOT_START_WITH_1_MSG)
+    elif len(numbers) != len(set(numbers)):
+        raise ValueError(ERR_HAS_DUPLICATES_MSG)
+
 def encode(numbers: list[int]) -> list[int]:
     """Переводит решение задачи коммивояжера из натуральной кодировки в
     альтернативную. Решение всегда начинается с единицы.
@@ -45,7 +49,14 @@ def encode(numbers: list[int]) -> list[int]:
         """
     encode_validation(numbers)
 
-    return numbers
+    sort_numbers = sorted(numbers)
+    encoded_numbers = []
+    for i in range(len(numbers)):
+        index = sort_numbers.index(numbers[0]) + 1
+        encoded_numbers.append(index)
+        numbers.pop(0)
+        sort_numbers.pop(index - 1)
+    return encoded_numbers
 
 
 def decode(codes: list[int]) -> list[int]:
@@ -61,13 +72,20 @@ def decode(codes: list[int]) -> list[int]:
         положительных чисел.
         """
     decode_validation(codes)
-    return codes
 
+    sort_codes = [i for i in range(len(codes))]
+    decoded_numbers = []
+    for i in range(len(codes)):
+        item = sort_codes[codes[0] - 1] + 1
+        decoded_numbers.append(item)
+        sort_codes.pop(codes[0] - 1)
+        codes.pop(0)
+    return decoded_numbers
 
 if __name__ == '__main__':
     print('Пример натуральной и альтернативной кодировки решения задачи о '
           'рюкзаке\n')
-    natural = [1, 5, 2, 4, 3]
-    alter = None
+    natural = [1, 3, 5, 4, 2, 7, 6]
+    alter = [1, 2, 3, 2, 1, 2, 1]
     print(f'Натуральный код {natural} -> Альтернативный код {encode(natural)}')
     print(f'Альтернативный код {alter} -> Натуральный код {decode(alter)}')
