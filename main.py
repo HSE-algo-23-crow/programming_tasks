@@ -10,6 +10,48 @@ PARAM_ERR_MSG = ('Таблица расстояний не является пр
                  'числовыми значениями')
 NEG_VALUE_ERR_MSG = 'Расстояние не может быть отрицательным'
 
+def matrix_validation(dist_matrix: list[list[NullableNumber]]):
+    if not isinstance(dist_matrix, list):
+        raise TypeError(PARAM_ERR_MSG)
+    elif not dist_matrix or len(dist_matrix) != len(dist_matrix[0]):
+        raise TypeError(PARAM_ERR_MSG)
+    else:
+        for i in range(len(dist_matrix)):
+            if not isinstance(dist_matrix[i], list) or len(dist_matrix[0]) != len(dist_matrix[i]):
+                raise TypeError(PARAM_ERR_MSG.format(dist_matrix[i]))
+            for j in range(len(dist_matrix[i])):
+                if isinstance(dist_matrix[i][j],str):
+                    raise TypeError(PARAM_ERR_MSG)
+                elif isinstance(dist_matrix[i][j], (int, float)) and dist_matrix[i][j] < 0:
+                    raise ValueError(NEG_VALUE_ERR_MSG)
+
+def generate_permutations(lst):
+    # Если список пуст, возвращаем пустой список
+    if len(lst) == 0:
+        return []
+    # Если в списке один элемент, возвращаем список с этим элементом
+    if len(lst) == 1:
+        return [lst]
+    # Список для хранения всех перестановок
+    permutations = []
+    # Проходим по всем элементам списка
+    for i in range(len(lst)):
+        m = lst[i]
+        # Получаем список без текущего элемента
+        remLst = lst[:i] + lst[i+1:]
+        # Для каждой перестановки оставшегося списка
+        for p in generate_permutations(remLst):
+            # Добавляем текущий элемент к перестановке
+            permutations.append([m] + p)
+    return permutations
+
+def calculate_total_distance(route, distance_matrix):
+    total_distance = 0
+    number_of_cities = len(distance_matrix)
+    for i in range(number_of_cities):
+        # Суммируем расстояние от текущего города до следующего
+        total_distance += distance_matrix[route[i]][route[(i + 1) % number_of_cities]]
+    return total_distance
 
 def get_salesman_path(dist_matrix: list[list[NullableNumber]]) -> \
         dict[str, float | list[int]]:
@@ -22,16 +64,27 @@ def get_salesman_path(dist_matrix: list[list[NullableNumber]]) -> \
     :return: Словарь с ключами: distance - кратчайшее расстояние,
     path - список с индексами вершин на кратчайшем маршруте.
     """
-    pass
+    matrix_validation(dist_matrix)
 
+    cities = list(range(len(dist_matrix)))
+    shortest_route = None
+    min_distance = float('inf')
+
+    for route in generate_permutations(cities):
+        current_distance = calculate_total_distance(route, dist_matrix)
+        # Если расстояние меньше текущего минимального
+        if current_distance < min_distance:
+            # Обновляем минимальное расстояние и лучший маршрут
+            min_distance = current_distance
+            route.append(route[0])
+            shortest_route = route
+        # Возвращаем лучший маршрут и его расстояние
+    return {DISTANCE: min_distance, PATH: shortest_route}
 
 if __name__ == '__main__':
     print('Пример решения задачи коммивояжёра\n\nМатрица расстояний:')
-    matrix = [[None, 12., 9., 9., 12.],
-              [9., None, 8., 19., 15.],
-              [7., 1., None, 17., 11.],
-              [5., 9., 12., None, 16.],
-              [14., 6., 12., 22., None]]
+    matrix = [[None]]
+
     for row in matrix:
         print(row)
 
