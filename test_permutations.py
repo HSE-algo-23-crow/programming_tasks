@@ -1,6 +1,6 @@
 import unittest
 
-from main import generate_permutations
+from permutations import generate_permutations
 
 
 class TestPermutation(unittest.TestCase):
