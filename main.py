@@ -25,6 +25,20 @@ def matrix_validation(dist_matrix: list[list[NullableNumber]]):
                 elif isinstance(dist_matrix[i][j], (int, float)) and dist_matrix[i][j] < 0:
                     raise ValueError(NEG_VALUE_ERR_MSG)
 
+def is_path_possible(distance_matrix):
+    def dfs(city, visited):
+        visited.add(city)
+        for next_city in range(len(distance_matrix)):
+            if distance_matrix[city][next_city] is not None and next_city not in visited:
+                dfs(next_city, visited)
+
+    for i in range(len(distance_matrix)):
+        visited = set()
+        dfs(i, visited)
+        if len(visited) != len(distance_matrix):
+            return False
+    return True
+
 def generate_permutations(lst):
     # Если список пуст, возвращаем пустой список
     if len(lst) == 0:
@@ -48,9 +62,14 @@ def generate_permutations(lst):
 def calculate_total_distance(route, distance_matrix):
     total_distance = 0
     number_of_cities = len(distance_matrix)
+    if len(route) == 1:
+        return 0
     for i in range(number_of_cities):
         # Суммируем расстояние от текущего города до следующего
-        total_distance += distance_matrix[route[i]][route[(i + 1) % number_of_cities]]
+        if distance_matrix[route[i]][route[(i + 1) % number_of_cities]] is not None:
+            total_distance += distance_matrix[route[i]][route[(i + 1) % number_of_cities]]
+        else:
+            total_distance += INFINITY
     return total_distance
 
 def get_salesman_path(dist_matrix: list[list[NullableNumber]]) -> \
@@ -66,19 +85,23 @@ def get_salesman_path(dist_matrix: list[list[NullableNumber]]) -> \
     """
     matrix_validation(dist_matrix)
 
-    cities = list(range(len(dist_matrix)))
-    shortest_route = None
-    min_distance = float('inf')
+    if not is_path_possible(dist_matrix):
+        return {'distance': None, 'path': []}
+    else:
+        cities = list(range(len(dist_matrix)))
+        shortest_route = None
+        min_distance = float('inf')
 
-    for route in generate_permutations(cities):
-        current_distance = calculate_total_distance(route, dist_matrix)
-        # Если расстояние меньше текущего минимального
-        if current_distance < min_distance:
-            # Обновляем минимальное расстояние и лучший маршрут
-            min_distance = current_distance
-            route.append(route[0])
-            shortest_route = route
-        # Возвращаем лучший маршрут и его расстояние
+        for route in generate_permutations(cities):
+            current_distance = calculate_total_distance(route, dist_matrix)
+            # Если расстояние меньше текущего минимального
+            if current_distance < min_distance:
+                # Обновляем минимальное расстояние и лучший маршрут
+                min_distance = current_distance
+                if len(dist_matrix) > 1:
+                    route.append(route[0])
+                shortest_route = route
+            # Возвращаем лучший маршрут и его расстояние
     return {DISTANCE: min_distance, PATH: shortest_route}
 
 if __name__ == '__main__':
