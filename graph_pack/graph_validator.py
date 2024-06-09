@@ -31,7 +31,6 @@ class GraphValidator:
 
         root = []
         for edge in graph.edges():
-            print(edge)
             if edge[0] in root:
                 return False
             root.append(edge[0])
@@ -41,7 +40,6 @@ class GraphValidator:
             return False
         except nx.NetworkXNoCycle:
             return True
-        return False
 
     @staticmethod
     def get_tree_count(graph: nx.Graph) -> int:
