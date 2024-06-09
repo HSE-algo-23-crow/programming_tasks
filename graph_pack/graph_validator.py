@@ -28,31 +28,40 @@ class GraphValidator:
     def is_inverted_trees(graph: nx.Graph) -> bool:
         """Проверяет является ли граф обратно ориентированным деревом или
         лесом из обратно ориентированных деревьев."""
-        if not nx.is_directed_acyclic_graph(graph):
-            return False
-        for component in nx.weakly_connected_components(graph):
-            subgraph = graph.subgraph(component)
-            if not nx.is_tree(subgraph.to_undirected()):
-                print(f"Component {component} is not a tree.")
+
+        root = []
+        for edge in graph.edges():
+            print(edge)
+            if edge[0] in root:
                 return False
-        return True
+            root.append(edge[0])
+
+        try:
+            nx.find_cycle(graph)
+            return False
+        except nx.NetworkXNoCycle:
+            return True
+        return False
 
     @staticmethod
     def get_tree_count(graph: nx.Graph) -> int:
         """Возвращает количество деревьев в графе."""
-        if not nx.is_directed_acyclic_graph(graph):
+        try:
+            nx.find_cycle(graph)
             raise ValueError(ERR_GRAPH_IS_NOT_INV_TREE)
-        return nx.number_weakly_connected_components(graph)
+        except nx.NetworkXNoCycle:
+            pass
+        from networkx.algorithms.components import connected_components
+        tree_count = list(connected_components(graph.to_undirected()))
+        return len(tree_count)
 
     @staticmethod
     def graph_has_loop(graph: nx.Graph) -> bool:
-        """Проверяет наличие цикла в графе."""
         try:
             nx.find_cycle(graph)
             return True
         except nx.NetworkXNoCycle:
             return False
-
 
 if __name__ == '__main__':
     graph = nx.DiGraph()
