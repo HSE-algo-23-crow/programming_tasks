@@ -1,9 +1,21 @@
 import math
 
+DIF_LEN_EXCEPTION = "Количество строк в матрице отличается от количества столбцов"
+ZERO_MATRIX_EXCEPTION = "Матрица не содержит строк"
+ERROR_TYPE_EXCEPTION = "Ячейки матрицы должны представлять собой число"
+
 
 # Здесь будет исходный код разработанного алгоритма
 def __check_params(matrix: list[list[int]]):
-    pass
+    matr_len = len(matrix)
+    if matr_len == 0:
+        raise Exception(ZERO_MATRIX_EXCEPTION)
+    for row in matrix:
+        if len(row) != matr_len:
+            raise Exception(DIF_LEN_EXCEPTION)
+        for x in row:
+            if type(x) != int and type(x) != float:
+                raise Exception(ERROR_TYPE_EXCEPTION)
 
 
 def prim_algorythm(matrix: list[list[int]], first_node_index: int) -> list[list[int]]:
