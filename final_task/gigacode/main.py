@@ -3,6 +3,8 @@ import math
 DIF_LEN_EXCEPTION = "Количество строк в матрице отличается от количества столбцов"
 ZERO_MATRIX_EXCEPTION = "Матрица не содержит строк"
 ERROR_TYPE_EXCEPTION = "Ячейки матрицы должны представлять собой число"
+LESS_ZERO = "Вес ребра должен быть больше 0"
+NOT_ORIENTED = "Граф не является ориентированным"
 
 
 # Здесь будет исходный код разработанного алгоритма
@@ -16,6 +18,10 @@ def __check_params(matrix: list[list[int]]):
         for x in row:
             if type(x) != int and type(x) != float:
                 raise Exception(ERROR_TYPE_EXCEPTION)
+            if x <= 0:
+                raise Exception(LESS_ZERO)
+        if sum(row) == 0:
+            raise Exception(NOT_ORIENTED)
 
 
 def prim_algorythm(matrix: list[list[int]], first_node_index: int) -> list[list[int]]:
