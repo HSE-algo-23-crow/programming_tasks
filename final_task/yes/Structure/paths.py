@@ -18,8 +18,14 @@ class Paths:
     def get_paths(self) -> list:
         return self.__paths
 
-    def set_paths(self, value):
+    def set_paths(self, value: list):
         self.__paths = value
+
+    def get_names(self) -> dict:
+        return self.__names
+
+    def set_names(self, value: dict):
+        self.__names = value
 
     def add_point(self, name):
         self.length += 1
