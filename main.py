@@ -11,7 +11,7 @@ def get_win_sequence(input_string: str) -> str:
     """
     line = list(input_string.split("\n"))
     n = int(line[0])
-    string = line[1]
+    string = line[1][:n]
     min_letter = min(string)
     sequences = []
     for i in range(len(string)):
