@@ -57,6 +57,5 @@ def tournament(sample: list[T] | tuple[T], get_winner: Callable[[T, T], T]):
 if __name__ == '__main__':
     sample = [i for i in range(21)]
     random.shuffle(sample)
-
     print(f'Список: {sample}')
     print(f'Победитель турнира: {tournament(sample, lambda x, y: max(x, y))}')
