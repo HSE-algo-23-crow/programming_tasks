@@ -150,7 +150,7 @@ class GeneticSolver:
             self.__population = sorted(self.__population, key=lambda x: -x[1])
             self.__cut_population()
 
-        return self.__population[0]
+        return {COST: self.__population[0][1], ITEMS: list(i for i, v in enumerate(list(map(int, self.__population[0][0]))) if v)}
 
     @property
     def population(self) -> list[tuple[str, int]]:
