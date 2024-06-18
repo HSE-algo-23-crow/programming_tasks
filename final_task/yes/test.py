@@ -28,12 +28,6 @@ class Test_ant_algorithm_params(unittest.TestCase):
             check_params(0, 0, 0.9, 1, 2, 1)
         self.assertEqual(ALPHA_BETA_ZERO_ERROR, str(error.exception))
 
-    def test_alpha_beta_zero(self):
-        """Проверяет гиперпараметр бета"""
-        with self.assertRaises(ValueError) as error:
-            check_params(0, 0, 0.9, 1, 2, 1)
-        self.assertEqual(ALPHA_BETA_ZERO_ERROR, str(error.exception))
-
     def test_vaporize_value_1(self):
         """Проверяет значение испарение феромона 1"""
         with self.assertRaises(ValueError) as error:
