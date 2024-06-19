@@ -1,17 +1,11 @@
 import unittest
 
-from main import (
-    DIF_LEN_EXCEPTION,
-    ERROR_TYPE_EXCEPTION,
-    LESS_ZERO,
-    NOT_ORIENTED,
-    ZERO_MATRIX_EXCEPTION,
-    prim_algorythm,
-)
+from main import (DIF_LEN_EXCEPTION, ERROR_TYPE_EXCEPTION, LESS_ZERO,
+                  NOT_ORIENTED, ZERO_MATRIX_EXCEPTION, prim_algorythm)
 
 
-class Test(unittest.TestCase):
-    """Это будет класс для тестирования разработанного алгоритма"""
+class TestPrimAlgorythm(unittest.TestCase):
+    """Класс тестирования разработанного алгоритма Прима"""
 
     def test_correctness(self):
         """Тест на корректность работы алгоритма Прима"""
