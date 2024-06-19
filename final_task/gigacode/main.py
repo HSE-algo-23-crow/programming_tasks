@@ -4,7 +4,8 @@ DIF_LEN_EXCEPTION = "Количество строк в матрице отли�
 ZERO_MATRIX_EXCEPTION = "Матрица не содержит строк"
 ERROR_TYPE_EXCEPTION = "Ячейки матрицы должны представлять собой число"
 LESS_ZERO = "Вес ребра должен быть >= 0"
-NOT_ORIENTED = "Граф не является ориентированным"
+NOT_WEIGHTED = "Граф не является взвешенным"
+NODE_NOT_CONNECTED_EXCEPTION = "Вершина под номером {0} никак не связана с другими"
 
 
 # Здесь будет исходный код разработанного алгоритма
@@ -12,16 +13,21 @@ def __check_params(matrix: list[list[int]]):
     matr_len = len(matrix)
     if matr_len == 0:
         raise Exception(ZERO_MATRIX_EXCEPTION)
-    for row in matrix:
-        if len(row) != matr_len:
+    for i in range(len(matrix)):
+        if len(matrix[i]) != matr_len:
             raise Exception(DIF_LEN_EXCEPTION)
-        for x in row:
+        sum = 0
+        for j in range(len(matrix[i])):
+            x = matrix[i][j]
             if type(x) != int and type(x) != float:
                 raise Exception(ERROR_TYPE_EXCEPTION)
             if x < 0:
                 raise Exception(LESS_ZERO)
-        if sum(row) == 0:
-            raise Exception(NOT_ORIENTED)
+            if x != matrix[j][i]:
+                raise Exception(NOT_WEIGHTED)
+            sum += x
+        if sum == 0:
+            raise Exception(NODE_NOT_CONNECTED_EXCEPTION.format(str(i + 1)))
 
 
 def prim_algorythm(matrix: list[list[int]], first_node_index: int) -> list[list[int]]:

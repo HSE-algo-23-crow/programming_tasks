@@ -1,7 +1,8 @@
 import unittest
 
 from main import (DIF_LEN_EXCEPTION, ERROR_TYPE_EXCEPTION, LESS_ZERO,
-                  NOT_ORIENTED, ZERO_MATRIX_EXCEPTION, prim_algorythm)
+                  NODE_NOT_CONNECTED_EXCEPTION, NOT_WEIGHTED,
+                  ZERO_MATRIX_EXCEPTION, prim_algorythm)
 
 
 class TestPrimAlgorythm(unittest.TestCase):
@@ -58,8 +59,8 @@ class TestPrimAlgorythm(unittest.TestCase):
             prim_algorythm(matrix, 0)
         self.assertTrue(LESS_ZERO in str(context.exception))
 
-    def test_not_oriented_graph(self):
-        """Тест на проверку исключения для неориентированного графа"""
+    def test_not_connected_node(self):
+        """Тест на проверку исключения для несвязанных вершин"""
         matrix = [
             [0, 0, 0],
             [0, 0, 0],
@@ -67,7 +68,22 @@ class TestPrimAlgorythm(unittest.TestCase):
         ]
         with self.assertRaises(Exception) as context:
             prim_algorythm(matrix, 0)
-        self.assertTrue(NOT_ORIENTED in str(context.exception))
+        self.assertTrue(
+            NODE_NOT_CONNECTED_EXCEPTION.format("1") in str(context.exception)
+        )
+
+    def test_not_weighted_graph(self):
+        """Тест на проверку невзвешенного графа"""
+        matrix = [
+            [0, 18, 5, 0, 0],
+            [19, 0, 5, 9, 2],
+            [5, 5, 0, 1, 6],
+            [0, 9, 1, 0, 1],
+            [0, 2, 6, 1, 0],
+        ]
+        with self.assertRaises(Exception) as context:
+            prim_algorythm(matrix, 0)
+        self.assertTrue(NOT_WEIGHTED in str(context.exception))
 
 
 if __name__ == "__main__":
